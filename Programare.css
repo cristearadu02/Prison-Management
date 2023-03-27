@@ -1,0 +1,42 @@
+body {
+    background-color: #3E363F;
+    color: #73A580;
+    font-family: sans-serif;
+  }
+  input[type="text"] {
+    background-color: #30D5C8;
+  }
+  input[type="number"] {
+    background-color: #30D5C8;
+  }
+  input[type="datetime-local"] {
+    background-color: #30D5C8;
+  }  
+  .temp{
+    color:#30D5C8;
+  }
+  .form{
+    max-width: 500px;
+    margin: 2rem auto;
+    border:2px solid #30D5C8;
+    padding: 3rem;
+    border-radius: 5px;}
+
+    label {
+        display: inline;
+        padding:1rem 0 .25rem;
+        font-size: 14px;
+    }
+
+.Submit{
+    border: 1px;;
+    background: #f7f7f7;
+    padding: .5rem;
+    color:#3E363F;
+    margin:1rem 0;
+    width:auto;
+    text-transform: uppercase;
+    cursor:pointer;
+    align-items: center;
+    
+}
