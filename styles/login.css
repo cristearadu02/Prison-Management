@@ -1,0 +1,104 @@
+* {
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding-bottom: 50px;
+    font-family: Arial, sans-serif;
+}
+.wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    height: 100vh;
+}
+.left-panel {
+    width: 100%;
+    padding-bottom: 50px;
+    background-color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+.logo {
+    color: #30D5C8   ;
+    position: absolute;
+    top: 20px;
+    left: 20px;
+}
+.right-panel {
+    width: 100%;
+    padding-bottom: 50px;
+    background-image: url('/ProiectWeb/larry-farr-VbTk5Y8ZaNk-unsplash.jpg');
+    background-size: cover;
+    background-position: center;
+}
+.login-form {
+    width: 80%;
+    max-width: 400px;
+    text-align: center;
+}
+.login-form label {
+    display: block;
+    margin-top: 10px;
+    text-align: left;
+}
+.login-form input[type="text"],
+.login-form input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+.login-form button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+.login-form a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 14px;
+}
+.links {
+    margin-top: 10px;
+}
+
+.right-panel-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    text-align: center;
+}
+.welcome {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+.register {
+    font-size: 18px;
+}
+.register a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+
+
+
+/* Media queries for larger screens */
+@media screen and (min-width: 768px) {
+    .left-panel, .right-panel {
+        width: 50%;
+    }
+    .right-panel {
+        order: 1;
+    }
+}
