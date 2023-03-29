@@ -1,11 +1,10 @@
   @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap');
-
 * {
     box-sizing: border-box;
   }
-  
+ 
   body {
-    background-image: url("Background5.jpg");
+    background-image: url("Background6.jpg");
     background-position: center center;
     background-size: cover;
     margin: 0;
@@ -65,7 +64,7 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin-top: 220px; /* modifica aceasta linie */
+    margin-top: 300px; /* modifica aceasta linie */
   }
   
   main > div {
@@ -76,7 +75,7 @@
   }
   
   main > div:hover {
-    background-color: #30d5c8;
+    background-color:rgba(48,213,200,0.8);;
     color: #fff;
   }
   
@@ -89,7 +88,7 @@
     border-radius: 1rem;
     margin-bottom: 2rem;
     font-family: 'Oswald', sans-serif;
-    padding-top: 4rem;
+    padding-top: 2rem;
   }
 
   .Istoric {
@@ -102,7 +101,6 @@
     margin-bottom: 2rem;
     font-family: 'Oswald', sans-serif;
   }
-
 
   .Conducerea {
     color: white;
@@ -130,6 +128,7 @@
   
  .goUp:hover {
     background-color: #30d5c8;
+    color: #333;
   }
 
   /* Media queries */
@@ -147,5 +146,7 @@
     nav ul li {
       margin: 0.5rem 0;
     }
+
+
   }
   
