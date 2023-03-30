@@ -94,7 +94,7 @@ body {
 
 .right-panel {
     width: 50%;
-    background-image: linear-gradient(rgba(115, 165, 128, 0.6), rgba(115, 165, 128, 0.6)), url('/ProiectWeb/resources/caricatura.jpg');
+    background-image: linear-gradient(rgba(115, 165, 128, 0.6), rgba(115, 165, 128, 0.6)), url('../resources/caricatura.jpg');
     background-size: cover;
     background-position: center;
 }
