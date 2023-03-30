@@ -1,17 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <meta cahrset="UTF-8">
+        <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatibile" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.25">
         <title>Programare vizita</title>
         <link rel="stylesheet" href="Programare.css">
 
-    
-
     </head>
     <body>
-        <form action="" method="POST" class="form">
+        <header>
+            <h1>Penitenciarul Iasi</h1>
+            <nav>
+              <ul>
+                <li><a href="#Creeare cont">Creeare cont</a></li>
+                <li><a href="#Conectare cont">Conectare cont</a></li>
+                <li><a href="#Despre">Despre</a></li>
+                <li><a href="#Istoric">Istoric</a></li>
+                <li><a href="#Conducerea">Conducerea</a></li>
+                <li><a href="#harta">Locatie</a></li>
+                <li><a href="Ghid.html">Ghid</a></li>
+              </ul>
+            </nav>
+          </header>
+       
+        
+        
+        
+        <div class="container">
+            
+            <div class="image-container"></div>
+            <div class="form-container">
+                <h1 class="title">Formular inregistrare intalnire</h1>
+                
+            
+            
+        <form action="" method="POST">
+            
 
             <label for="Nume_viz">Nume vizitator</label>
             <input type="text" id="Nume_viz" name="nume_viz" required><br><br>
@@ -28,7 +53,7 @@
             <label for="Prenume_det">Prenume detinut</label>
             <input type="text" id="Prenume_det" name="prenume_det" required><br><br>
 
-            <label for="RelatieDetinut">Relatia cu detinutul</label>
+            <label for="RelatieDetinut" >Relatia cu detinutul</label>
             <select id="RelatieDetinut" required>
                 <option label="Ruda">Ruda</option>
                 <option label="Tutore legal">Tutore legal</option>
@@ -38,7 +63,7 @@
 
             <label for="NaturaViz">Natura Vizitei</label>
             <select id="NaturaViz" required>
-                <option label="Amicala">Amicala</option>
+                <option label="Amicala">Amicala</option>S
                 <option label="Romantica">Romantica</option>
                 <option label="Consultanta">Consultanta</option>
                 <option label="Informativa">Informativa</option>
@@ -82,10 +107,15 @@
 
                 <input type="submit" value = "Submit" class="Submit">
         </form>
+    </div>
+    <div class="right-image-container"></div>
+        
 
         <script>
             const bringSomethingInput = document.getElementById('bring-something-input');
             const yesRadio = document.getElementById('da');
+            const noRadio =document.getElementById('nu');
+            const noRadio2=document.getElementById('nu2');
             const yesRadio2=document.getElementById('da2');
             const martoriinput=document.getElementById('martori-input');
           
@@ -95,6 +125,20 @@
               } else {
                 bringSomethingInput.style.display = 'none';
               }
+            });
+            noRadio.addEventListener('change', () => {
+                if(noRadio.checked){
+                    bringSomethingInput.style.display= 'none';
+                } else {
+                    bringSomethingInput.style.display= 'block';
+                }
+            });
+            noRadio2.addEventListener('change', () => {
+                if(noRadio2.checked){
+                    martoriinput.style.display= 'none';
+                } else {
+                    martoriinput.style.display= 'block';
+                }
             });
             yesRadio2.addEventListener('change', () => {
                 if(yesRadio2.checked){
