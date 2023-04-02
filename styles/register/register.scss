@@ -1,0 +1,164 @@
+
+
+
+$primary-color-green: #73A580;
+$primary-color-blue: #30D5C8;
+$primary-color-dark: #3E363F;
+
+$primary-font: 'Oswald', sans-serif;
+$secondary-font: Arial, Helvetica, sans-serif;
+
+
+
+@mixin center-element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+  }
+  
+  header {
+    margin: 0;
+    background-color: $primary-color-green;
+    padding: 5px;
+    text-align: center;
+
+    h1{
+        color: white;
+        font-size: 40px;
+        font-family: $primary-font;
+        font-weight: bold; 
+    }
+  }
+
+
+  
+
+  main {
+    min-height: 100vh; 
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+
+  
+  .form-container {
+    background-color: #fff;
+    max-width: 800px;
+    margin: 50px auto;
+    padding: 40px;
+    border-style: solid;
+    border-color: #b1cdba;
+    border-width: 2px;
+    box-shadow: 0px 0px 10px rgba(131, 175, 143, 0.3);
+    border-radius: 10px;
+
+    h2{
+        color: #639c72;
+        font-size: 30px;
+        font-weight: bolder; 
+        font-family: Arial, Impact;
+        margin-bottom: 10%;
+        text-decoration: underline;
+        text-underline-offset: 10px;
+        text-decoration-thickness: 3px;
+        text-decoration-color: $primary-color-green;
+    }
+
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="date"],
+    select {
+      padding: 10px;
+      margin-bottom: 30px;
+      border: 1px solid #bfbfbf;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+    
+    input[type="file"] {
+      margin-bottom: 6%;
+    }
+
+
+    label {
+        margin-bottom: 5px;
+        font-size:15px;
+        font-family: $secondary-font;
+        font-weight: bold;
+        color: $primary-color-dark;
+      }
+
+
+      button{
+        background-color: $primary-color-green;
+        color: white;
+        padding: 15px 20px;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: $secondary-font;
+        transition: 0.3s;
+      }
+      
+        button:hover {
+            background-color: #5a8c67;
+        }
+
+        p {
+            margin-top: 0;
+            font-size: 15px;
+            font-family: $secondary-font;
+            margin-top: 7%;
+            @include center-element;
+
+            a {
+                color: $primary-color-green;
+                text-decoration: none;
+                font-weight: bold;
+                font-size: 15px;
+                font-family: $secondary-font;
+                &:hover {
+                    text-decoration: underline;
+                }
+            }
+        }
+
+  }
+  
+
+  img#image-preview {
+    max-width: 100px;
+    margin-bottom: 40px;
+    border-radius: 15px;
+  }
+
+
+  @media screen and (max-width: 600px) {
+
+    .form-container {
+      margin: 0;
+    }
+
+}
+  
