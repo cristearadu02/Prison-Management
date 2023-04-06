@@ -126,3 +126,13 @@ goTopButton.addEventListener('click', () => {
     behavior: 'smooth',
   });
 });
+
+
+
+
+
+
+
+function navigateToLink(path) {
+  window.location.href = path;
+}
