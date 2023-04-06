@@ -1,0 +1,135 @@
+body {
+    background-color: #3E363F;
+    color: #73A580;
+    font-family: sans-serif;
+  }
+  .container {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+			margin: auto;
+			padding: 20px;
+  }
+  header {
+    font-family: 'Oswald', sans-serif;
+    background-color:rgba(0,0,0,0.4);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  nav ul li {
+    margin: 0 1rem;
+  }
+  
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem;
+  }
+  
+  nav ul li a:hover {
+    background-color: #30d5c8;
+    color: #333;
+    border-radius: 10px;
+  }
+  
+  section {
+    margin: 4rem 0;
+  }
+  
+  h1, h2 {
+    margin: 0;
+  }
+  .image-container {
+    flex-basis: 25%;
+    background-image: url("Background6.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+    flex-grow: 0;
+		flex-shrink: 0;
+    background-position: left;
+    height: 100%;
+  }
+  .title{
+    vertical-align: top;
+    height: 100px;
+  }
+  .option{
+    color:#30D5C8;
+  }
+  
+  input[type="text"] {
+    background-color: #30D5C8;
+  }
+  input[type="number"] {
+    background-color: #30D5C8;
+  }
+  input[type="datetime-local"] {
+    background-color: #30D5C8;
+  }  
+  .temp{
+    color:#30D5C8;
+  }
+
+  .form-container{
+    flex-basis: 27%;
+    max-width: 500px;
+    margin: 2rem auto;
+    border:2px solid #30D5C8;
+    padding: 3rem;
+    background-color: #3E363F;
+    display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+    border-radius: 5px;
+  }
+
+    .right-image-container {
+			flex-basis: 27%;
+			background-image: url("Background6.jpg");
+			background-repeat: no-repeat;
+			background-size: cover;
+			background-position: right;
+			height: 100%;
+		}
+
+    label {
+        display: inline;
+        padding:1rem 0 .25rem;
+        font-size: 14px;
+        
+    }
+    .form-container input[type="submit"]:hover {
+			background-color: #45a049;
+		}
+    .form-container input[type="submit"] {
+			width: 100%;
+			background-color: #4CAF50;
+			color: #fff;
+			padding: 14px 20px;
+			margin: 8px 0;
+			border: none;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 16px;
+		}

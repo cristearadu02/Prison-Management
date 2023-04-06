@@ -1,12 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../styles/user-profile/user-profile.css">
+  <script src="../scripts/user-profile.js" defer></script>
+  <title>Scholarly Pag</title>
 </head>
 <body>
-    
-</body>
+    <header>
+      <div class="logo">Scholarly Logo</div>
+      <div class="profile">
+        <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" />
+        <span class="profile-name">John Doe</span>
+        <div class="dropdown hidden">
+          <p>Email: john.doe@example.com</p>
+          <p>Other info: ...</p>
+          <button class="change-info">Change Info</button>
+          <button class="logout">Logout</button>
+        </div>
+      </div>
+      <button class="create-visit">Create Visit</button>
+    </header>
+    <main>
+      <div class="content-wrapper">
+        <button class="show-visits">Show Visits <span class="arrow">&#x25BC;</span></button>
+        <ul class="visits-list hidden"></ul>
+      </div>
+    </main>
+    <button class="go-top hidden">Go Top</button>
+  </body>
 </html>
