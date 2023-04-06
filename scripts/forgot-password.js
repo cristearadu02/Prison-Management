@@ -7,8 +7,11 @@ document.getElementById("security-form").addEventListener("submit", function(eve
     
     if (isSecurityAnswerCorrect(answer)) {
       document.getElementById("security-form").classList.add("hidden");
+      document.getElementById("message").classList.add("hidden");
       document.getElementById("password-form").classList.remove("hidden");
-    } else {
+    } 
+    else 
+    {
       alert("Incorrect answer.");
     }
   });
