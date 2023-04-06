@@ -17,3 +17,8 @@ function previewImage(event) {
     }
   }
 
+
+  function navigateToLink(path) {
+    window.location.href = path;
+  }
+

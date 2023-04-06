@@ -24,10 +24,21 @@ body {
 .logo {
     color: #3E363F;
     position: absolute;
-    top: 15px;
-    left: 35px;
+    top: 10px;
+    left: 30px;
+    padding-left: 10px;
+    padding-right: 10px;
+    cursor: pointer;
     font-family: 'Oswald', sans-serif;
     font-weight: bold; 
+    transition: 0.3s;
+}
+
+.logo:hover {
+    color: white;
+    background-color: #73A580;
+    font-size: 17px;
+    
 }
 
 .login-form {
