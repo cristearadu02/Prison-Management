@@ -42,6 +42,8 @@
     text-decoration: none;
     font-weight: bold;
     padding: 0.5rem;
+    border-radius: 10px;
+    transition: background-color 0.2s ease-in-out;
   }
   
   nav ul li a:hover {
@@ -58,59 +60,30 @@
     margin: 0;
   }
 
-  main {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  .bigDiv {
+    font-family: 'Oswald', sans-serif;
+    justify-content: space-between;
     align-items: center;
-    height: 100vh;
-    margin-top: 300px; /* modifica aceasta linie */
+    margin: 50px auto;
+    max-width: 800px;
   }
   
-  main > div {
-    background-color:rgba(0,0,0,0.4);
-    padding: 1rem;
+  .row {
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 20px;
+    margin-bottom: 30px;
     border-radius: 10px;
     transition: background-color 0.2s ease-in-out;
+    width: 100%;
   }
   
-  main > div:hover {
-    background-color:rgba(48,213,200,0.8);;
+  .row:hover {
+    background-color: rgba(48, 213, 200, 0.8);
     color: #333;
-  }
-  
-  .Despre {
-    color: white;
-    max-width: 800px;
-    font-size: 1.5rem;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
-    font-family: 'Oswald', sans-serif;
-    padding-top: 2rem;
-  }
-
-  .Istoric {
-    color: white;
-    max-width: 800px;
-    font-size: 1.5rem;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
-    font-family: 'Oswald', sans-serif;
-  }
-
-  .Conducerea {
-    color: white;
-    max-width: 800px;
-    font-size: 1.5rem;
-    padding: 2rem;
-    text-align: center;
-    border-radius: 1rem;
-    margin-bottom: 2rem;
-    font-family: 'Oswald', sans-serif;
   }
   
   .goUp {
@@ -149,11 +122,6 @@
     margin: 0 0.2rem;
   }
 
-  /* Adjust padding and font size of main sections */
-  .Despre, .Istoric, .Conducerea {
-    font-size: 1rem;
-    padding: 0.5rem;
-  }
 }
 
  @media only screen and (min-width: 600px) and (max-width: 800px) {
@@ -172,11 +140,6 @@
     margin: 0 0.4rem;
   }
 
-  /* Adjust padding and font size of main sections */
-  .Despre, .Istoric, .Conducerea {
-    font-size: 1rem;
-    padding: 0.6rem;
-  }
 }
 
   @media only screen and (min-width: 801px) and (max-width: 1000px) {
@@ -195,11 +158,6 @@
       margin: 0 0.5rem;
     }
 
-    /* Adjust padding and font size of main sections */
-    .Despre, .Istoric, .Conducerea {
-      font-size: 1.1rem;
-      padding: 0.8rem;
-    }
   }
 
   @media only screen and (min-width: 1001px) and (max-width: 1200px) {
@@ -218,11 +176,6 @@
     margin: 0 0.5rem;
   }
 
-  /* Adjust padding and font size of main sections */
-  .Despre, .Istoric, .Conducerea {
-    font-size: 1.1rem;
-    padding: 0.8rem;
-  }
 }
 
 
@@ -242,9 +195,4 @@
     margin: 0 0.5rem;
   }
 
-  /* Adjust padding and font size of main sections */
-  .Despre, .Istoric, .Conducerea {
-    font-size: 1.2rem;
-    padding: 1rem;
-  }
 }
