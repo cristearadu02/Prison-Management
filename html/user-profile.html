@@ -10,25 +10,27 @@
 </head>
 <body>
     <header>
-      <div class="logo">Scholarly Logo</div>
+      <div class="logo" onclick="navigateToLink('#home')">Penitenciarul Iași</div>
       <div class="profile">
         <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" />
-        <span class="profile-name">John Doe</span>
+        <span class="profile-name">Cristea Radu</span>
         <div class="dropdown hidden">
-          <p>Email: john.doe@example.com</p>
-          <p>Other info: ...</p>
-          <button class="change-info">Change Info</button>
-          <button class="logout">Logout</button>
+
+          <span>CNP: <p>r123refmfkieei2123</p></span>
+          <span>E-mail: <p>andrei@example.com</p></span>
+
+          <button class="change-info">Modificare informații</button>
+          <button class="logout">Delogare</button>
         </div>
       </div>
-      <button class="create-visit">Create Visit</button>
+      <button class="create-visit" onclick="navigateToLink('#home')">Programare vizită</button>
     </header>
     <main>
       <div class="content-wrapper">
-        <button class="show-visits">Show Visits <span class="arrow">&#x25BC;</span></button>
+        <button class="show-visits">Vizitele mele<span class="arrow">&#x25BC;</span></button>
         <ul class="visits-list hidden"></ul>
       </div>
     </main>
-    <button class="go-top hidden">Go Top</button>
+    <button class="go-top hidden">Du-te sus</button>
   </body>
 </html>
