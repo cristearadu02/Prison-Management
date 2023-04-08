@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/user-profile/user-profile.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald&display=swap">
+  <script src="../javascript/user-profile.js" defer></script>
+  <title>Penitenciarul Iași | Profil</title>
+</head>
+<body>
+    <header>
+      <div class="logo" onclick="navigateToLink('IndexLogat.html')">Penitenciarul Iași</div>
+      <div class="profile">
+        <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" >
+        <span class="profile-name">Cristea Radu</span>
+        <div class="dropdown hidden">
+
+          <div class = "info">CNP: <p>r123refmfkieei2123</p></div>
+          <div class = "info">E-mail: <p>andrei@example.com</p></div>
+
+          <button class="change-info">Modificare informații</button>
+          <button class="logout">Delogare</button>
+        </div>
+      </div>
+      <button class="create-visit" onclick="navigateToLink('Programare.html')">Programare vizită</button>
+    </header>
+    <main>
+      <div class="content-wrapper">
+        <button class="show-visits">Vizitele mele<span class="arrow">&#x25BC;</span></button>
+        <ul class="visits-list hidden"></ul>
+      </div>
+    </main>
+    <button class="go-top hidden">Du-te sus</button>
+  </body>
+</html>

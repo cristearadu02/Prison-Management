@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap');
+
+body {
+  background-image: url("../resources/Background6.jpg");
+  background-position: center center;
+  background-size: cover;
+  margin: 0;
+}
+
+.bigDiv {
+  font-family: 'Oswald', sans-serif;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  margin: 50px auto;
+  max-width: 800px;
+}
+
+.column {
+  flex-basis: calc(25% - 30px);
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+
+.column:hover {
+  background-color: rgba(48, 213, 200, 0.8);
+  color: #333;
+}
+
+header {
+  font-family: 'Oswald', sans-serif;
+  background-color:rgba(0,0,0,0.4);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+
+.titlu {
+  font-family: 'Oswald', sans-serif;
+  font-size: 2rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 10px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.titlu:hover {
+  background-color: #30d5c8;
+  color: #333;
+  border-radius: 10px;
+}
+
+.acasa {
+  font-family: 'Oswald', sans-serif;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background-color: #3f4041;
+  color: #fff;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.acasa:hover {
+  background-color: #30d5c8;
+  color: #333;
+}
+
+.suport {
+  font-family: 'Oswald', sans-serif;
+  justify-content: space-between;
+  align-items: center;
+  margin: 50px auto;
+  max-width: 800px;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  color: white;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+.suport:hover {
+  background-color: #30d5c8;
+  color: #333;
+}

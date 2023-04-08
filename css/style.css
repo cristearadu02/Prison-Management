@@ -1,0 +1,198 @@
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap');
+* {
+    box-sizing: border-box;
+  }
+ 
+  body {
+    background-image: url("../resources/Background6.jpg");
+    background-position: center center;
+    background-size: cover;
+    margin: 0;
+  }
+  
+  header {
+    font-family: 'Oswald', sans-serif;
+    background-color:rgba(0,0,0,0.4);
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+  }
+  
+  header h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+  }
+
+  nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+  }
+  
+  nav ul li {
+    margin: 0 1rem;
+  }
+  
+  nav ul li a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 0.5rem;
+    border-radius: 10px;
+    transition: background-color 0.2s ease-in-out;
+  }
+  
+  nav ul li a:hover {
+    background-color: #30d5c8;
+    color: #333;
+    border-radius: 10px;
+  }
+  
+  section {
+    margin: 4rem 0;
+  }
+  
+  h1, h2 {
+    margin: 0;
+  }
+
+  .bigDiv {
+    font-family: 'Oswald', sans-serif;
+    justify-content: space-between;
+    align-items: center;
+    margin: 50px auto;
+    max-width: 800px;
+  }
+  
+  .row {
+    background-color: rgba(0, 0, 0, 0.4);
+    display: flex;
+    color: white;
+    text-align: center;
+    font-size: 1.2rem;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 10px;
+    transition: background-color 0.2s ease-in-out;
+    width: 100%;
+  }
+  
+  .row:hover {
+    background-color: rgba(48, 213, 200, 0.8);
+    color: #333;
+  }
+  
+  .goUp {
+    font-family: 'Oswald', sans-serif;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #3f4041;
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+ .goUp:hover {
+    background-color: #30d5c8;
+    color: #333;
+  }
+
+ /* Media Querries */
+ @media only screen and (max-width: 599px) {
+  /* Adjust header padding */
+  header {
+    padding: 0.3rem;
+  }
+
+  /* Reduce font size of header h1 */
+  header h1 {
+    font-size: 1rem;
+  }
+
+  /* Reduce margin between nav items */
+  nav ul li {
+    margin: 0 0.2rem;
+  }
+
+}
+
+ @media only screen and (min-width: 600px) and (max-width: 800px) {
+  /* Adjust header padding */
+  header {
+    padding: 0.3rem;
+  }
+
+  /* Reduce font size of header h1 */
+  header h1 {
+    font-size: 1.2rem;
+  }
+
+  /* Reduce margin between nav items */
+  nav ul li {
+    margin: 0 0.4rem;
+  }
+
+}
+
+  @media only screen and (min-width: 801px) and (max-width: 1000px) {
+    /* Adjust header padding */
+    header {
+      padding: 0.4rem;
+    }
+
+    /* Reduce font size of header h1 */
+    header h1 {
+      font-size: 1.3rem;
+    }
+
+    /* Reduce margin between nav items */
+    nav ul li {
+      margin: 0 0.5rem;
+    }
+
+  }
+
+  @media only screen and (min-width: 1001px) and (max-width: 1200px) {
+  /* Adjust header padding */
+  header {
+    padding: 0.4rem;
+  }
+
+  /* Reduce font size of header h1 */
+  header h1 {
+    font-size: 1.3rem;
+  }
+
+  /* Reduce margin between nav items */
+  nav ul li {
+    margin: 0 0.5rem;
+  }
+
+}
+
+
+ @media only screen and (min-width: 1201px) and (max-width: 1400px) {
+  /* Adjust header padding */
+  header {
+    padding: 0.5rem;
+  }
+
+  /* Reduce font size of header h1 */
+  header h1 {
+    font-size: 1.5rem;
+  }
+
+  /* Reduce margin between nav items */
+  nav ul li {
+    margin: 0 0.5rem;
+  }
+
+}
