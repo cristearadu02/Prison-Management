@@ -3,10 +3,7 @@ CRISTEA ANDREI RADU,
 PADURARIU ROBERT MARIAN,
  
 GRUPA: 2A3
-PROIECT: DETENTION ADMIN
+PROIECT: DETENTION ADMIN  
 
-
-
-
-MAIN INDEX -> /html/Index.html
-INDEX ADMIN PAGE -> /AdminPage/Index.html
+MAIN INDEX -> /html/Index.html  
+INDEX ADMIN PAGE -> /AdminPage/Index.html  
