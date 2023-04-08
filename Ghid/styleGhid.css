@@ -79,3 +79,26 @@ header {
   background-color: #30d5c8;
   color: #333;
 }
+
+.suport {
+  font-family: 'Oswald', sans-serif;
+  justify-content: space-between;
+  align-items: center;
+  margin: 50px auto;
+  max-width: 800px;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  color: white;
+  text-align: center;
+  font-size: 1.2rem;
+  padding: 20px;
+  margin-bottom: 30px;
+  border-radius: 10px;
+  transition: background-color 0.2s ease-in-out;
+  width: 100%;
+}
+
+.suport:hover {
+  background-color: #30d5c8;
+  color: #333;
+}
