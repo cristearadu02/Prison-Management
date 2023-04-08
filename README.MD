@@ -5,5 +5,8 @@ PADURARIU ROBERT MARIAN,
 GRUPA: 2A3
 PROIECT: DETENTION ADMIN
 
+
+
+
 MAIN INDEX -> /html/Index.html
 INDEX ADMIN PAGE -> /AdminPage/Index.html
