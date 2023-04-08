@@ -73,11 +73,11 @@ header {
   border-radius: 5px;
   text-align: left;
 }
-.dropdown span {
+.dropdown .info {
   font-weight: bolder;
   color: #3E363F;
 }
-.dropdown span p {
+.dropdown .info p {
   display: flex;
   font-weight: normal;
   font-family: "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
