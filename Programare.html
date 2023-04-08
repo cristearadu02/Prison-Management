@@ -2,10 +2,10 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatibile" content="IE=edge">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.25">
-        <title>Programare vizita</title>
         <link rel="stylesheet" href="Programare.css">
+        <title>Programare vizita</title>
 
     </head>
     <body>
@@ -13,12 +13,12 @@
             <h1>Penitenciarul Iasi</h1>
             <nav>
               <ul>
-                <li><a href="#Creeare cont">Creeare cont</a></li>
-                <li><a href="#Conectare cont">Conectare cont</a></li>
-                <li><a href="#Despre">Despre</a></li>
-                <li><a href="#Istoric">Istoric</a></li>
-                <li><a href="#Conducerea">Conducerea</a></li>
-                <li><a href="#harta">Locatie</a></li>
+                <li><a href="Creeare_cont">Creeare cont</a></li>
+                <li><a href="Conectare_cont">Conectare cont</a></li>
+                <li><a href="Despre">Despre</a></li>
+                <li><a href="Istoric">Istoric</a></li>
+                <li><a href="Conducerea">Conducerea</a></li>
+                <li><a href="harta">Locatie</a></li>
                 <li><a href="Ghid.html">Ghid</a></li>
               </ul>
             </nav>
@@ -35,7 +35,7 @@
                 
             
             
-        <form action="" method="POST">
+        <form action="de_implementat" method="POST">
             
 
             <label for="Nume_viz">Nume vizitator</label>
@@ -54,7 +54,8 @@
             <input type="text" id="Prenume_det" name="prenume_det" required><br><br>
 
             <label for="RelatieDetinut" >Relatia cu detinutul</label>
-            <select id="RelatieDetinut" required>
+            <select id="RelatieDetinut" size="1" required>
+                <option label="none"></option>
                 <option label="Ruda">Ruda</option>
                 <option label="Tutore legal">Tutore legal</option>
                 <option label="Avocat">Avocat</option>
@@ -62,8 +63,9 @@
             </select> <br><br>
 
             <label for="NaturaViz">Natura Vizitei</label>
-            <select id="NaturaViz" required>
-                <option label="Amicala">Amicala</option>S
+            <select id="NaturaViz" size="1" required>
+                <option label="none"></option>
+                <option label="Amicala">Amicala</option>
                 <option label="Romantica">Romantica</option>
                 <option label="Consultanta">Consultanta</option>
                 <option label="Informativa">Informativa</option>
@@ -72,18 +74,18 @@
             <label for="DataViz">Data si ora vizitei</label>
             <input type="datetime-local" id="DataViz" name="DataViz" required><br><br>
 
-            <label for="bring-something">Doriti sa oferiti ceva detinutului?</label>
+            <label>Doriti sa oferiti ceva detinutului?</label>
             <input type="radio" id="da" name="bring-something" value="da">
             <label for="da">Da</label>
             <input type="radio" id="nu" name="bring-something" value="nu">
             <label for="nu">Nu</label><br><br>
-                <div id="bring-something-input" style="display: none;">
+                <div id="bring-something" style="display: none;">
                 <label for="what-to-bring">Ce doriti sa oferiti detinutului:</label>
                 <input type="text" id="what-to-bring" name="what-to-bring"><br><br>
                 </div>
 
 
-            <label for="martori">Doriti sa aduceti martori la intalnire?</label>
+            <label>Doriti sa aduceti martori la intalnire?</label>
             <input type="radio" id="da2" name="martori" value="da2">
             <label for="da2">Da</label>
             <input type="radio" id="nu2" name="martori" value="nu2">
@@ -102,17 +104,19 @@
                     </select><br><br>
                 </div>
             
-                <input type="radio" id="da3" name="acceptare-termeni" value ="da3" required>
+                <input type="radio" id="acceptare-termeni" name="acceptare-termeni" value ="acceptare-termeni" required>
                 <label for="acceptare-termeni">Accept termenii si conditie pentru prelucararea si stocarea datelor personale</label><br><br>
 
                 <input type="submit" value = "Submit" class="Submit">
         </form>
+
     </div>
     <div class="right-image-container"></div>
-        
+    </div>
+
 
         <script>
-            const bringSomethingInput = document.getElementById('bring-something-input');
+            const bringSomethingInput = document.getElementById('bring-something');
             const yesRadio = document.getElementById('da');
             const noRadio =document.getElementById('nu');
             const noRadio2=document.getElementById('nu2');
