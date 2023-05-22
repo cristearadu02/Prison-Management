@@ -62,8 +62,20 @@ connection.connect((err) => {
         const registerPath = path.join(__dirname, 'Project_Web', 'html', 'register.html');
         response.setHeader('Content-type', 'text/html');
         response.statusCode = 200;
+        response.end(fs.readFileSync(registerPath, 'utf8'));  
+      } else if (url === '/Programare.html') {
+        // Aici Robert
+        const registerPath = path.join(__dirname, 'Project_Web', 'html', 'Programare.html');
+        response.setHeader('Content-type', 'text/html');
+        response.statusCode = 200;
         response.end(fs.readFileSync(registerPath, 'utf8'));
-      } else if (url.match(/\.css$/)) {
+      }else if (url === '/user-profile.html') {
+        // Aici Radu
+        const registerPath = path.join(__dirname, 'Project_Web', 'html', 'user-profile.html');
+        response.setHeader('Content-type', 'text/html');
+        response.statusCode = 200;
+        response.end(fs.readFileSync(registerPath, 'utf8'));
+      }else if (url.match(/\.css$/)) {
         const cssPath = path.join(__dirname, 'Project_Web', url);
         const fileStream = fs.createReadStream(cssPath, 'UTF-8');
         response.writeHead(200, { 'Content-Type': 'text/css' });
@@ -93,7 +105,6 @@ connection.connect((err) => {
       response.end('Method Not Allowed');
     }
   });
-  
 
 server.listen(port, host, () => { 
     console.log(`Server running at http://${host}:${port}/`);
