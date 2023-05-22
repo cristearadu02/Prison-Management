@@ -80,6 +80,12 @@ connection.connect((err) => {
         const fileStream = fs.createReadStream(cssPath, 'UTF-8');
         response.writeHead(200, { 'Content-Type': 'text/css' });
         fileStream.pipe(response);
+      }else if (url.match(/\.js$/)) {
+        // Handle JavaScript files
+        const jsPath = path.join(__dirname, 'Project_Web', url);
+        const fileStream = fs.createReadStream(jsPath, 'UTF-8');
+        response.writeHead(200, { 'Content-Type': 'text/javascript' });
+        fileStream.pipe(response);
       } else if (url.match(/\.(jpg|jpeg|png|gif)$/)) {
         const imagePath = path.join(__dirname, 'Project_Web', url);
         const imageStream = fs.createReadStream(imagePath);
