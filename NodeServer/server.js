@@ -10,37 +10,12 @@ const port = process.env.PORT || 3005;
 // - FOR MYSQL
 const mysql = require('mysql');
 
-const connection = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'projectweb',
-});
 
 // - FOR FILE SYSTEM and PATH
 const fs = require('fs');
 const path = require('path');
 
-connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to MySQL database: ', err);
-      return;
-    }
-    console.log('Connected to MySQL database!');
-  
-    // Insert data into table
-    /*const data = { nume: 'Cristescu', prenume: 'Cristian', cnp:'12905678123', parola: 'password', email: 'john.doe@example.com' };
-    const insertSql = 'INSERT INTO vizitatori SET ?';
-    connection.query(insertSql, data, (err, result) => {
-      if (err) {
-        console.error('Error inserting data into MySQL database: ', err);
-        return;
-      }
-      console.log('Data inserted successfully!');
-      console.log('Result: ', result);
-    });*/
-  });
-
+var loggedUser;
 
   const server = http.createServer((request, response) => {
     const { method, url } = request;
@@ -53,6 +28,7 @@ connection.connect((err) => {
         response.end(fs.readFileSync(indexPath, 'utf8'));
       } else if (url === '/login.html') {
         // Andrei vezi tu ce faci aici
+        loggedUser = 1;
         const loginPath = path.join(__dirname, 'Project_Web', 'html', 'login.html');
         response.setHeader('Content-type', 'text/html');
         response.statusCode = 200;

@@ -13,14 +13,14 @@
       <div class="logo" onclick="navigateToLink('IndexLogat.html')">Penitenciarul Iași</div>
       <div class="profile">
         <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" >
-        <span class="profile-name">Cristea Radu</span>
+        <span id="profileName" class="profile-name"></span>
         <div class="dropdown hidden">
 
-          <div class = "info">CNP: <p>r123refmfkieei2123</p></div>
-          <div class = "info">E-mail: <p>andrei@example.com</p></div>
+          <div class="info">CNP: <p id="cnpInfo"></p></div>
+          <div class="info">E-mail: <p id="emailInfo"></p></div>
 
           <button class="change-info">Modificare informații</button>
-          <button class="logout">Delogare</button>
+          <button class="logout" onclick="navigateToLink('Index.html')">Delogare</button>
         </div>
       </div>
       <button class="create-visit" onclick="navigateToLink('Programare.html')">Programare vizită</button>
