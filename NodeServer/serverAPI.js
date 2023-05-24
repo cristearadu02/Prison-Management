@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
     const userId = parsedUrl.query.id;
 
     // Create a MySQL query
-    const query = `SELECT nume, prenume, cnp, email FROM vizitatori WHERE id = ${userId}`;
+    const query = `SELECT nume, prenume, cnp, telefon, email FROM vizitatori WHERE id = ${userId}`;
 
     // Execute the query
     pool.query(query, (error, results) => {
@@ -38,6 +38,7 @@ const server = http.createServer((req, res) => {
             prenume: user.prenume,
             cnp: user.cnp,
             email: user.email,
+            telefon: user.telefon,
           };
 
           // Set CORS headers

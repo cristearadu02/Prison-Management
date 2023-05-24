@@ -15,7 +15,7 @@ const mysql = require('mysql');
 const fs = require('fs');
 const path = require('path');
 
-var loggedUser;
+var loggedUser = 1;
 
   const server = http.createServer((request, response) => {
     const { method, url } = request;
@@ -28,7 +28,7 @@ var loggedUser;
         response.end(fs.readFileSync(indexPath, 'utf8'));
       } else if (url === '/login.html') {
         // Andrei vezi tu ce faci aici
-        loggedUser = 1;
+        loggedUser = 3;
         const loginPath = path.join(__dirname, 'Project_Web', 'html', 'login.html');
         response.setHeader('Content-type', 'text/html');
         response.statusCode = 200;
@@ -51,7 +51,12 @@ var loggedUser;
         response.setHeader('Content-type', 'text/html');
         response.statusCode = 200;
         response.end(fs.readFileSync(registerPath, 'utf8'));
-      }else if (url.match(/\.css$/)) {
+      }else if (url === '/api/getLoggedUser') {
+        response.setHeader('Content-Type', 'application/json');
+        response.statusCode = 200;
+        response.end(JSON.stringify(loggedUser));
+      }
+      else if (url.match(/\.css$/)) {
         const cssPath = path.join(__dirname, 'Project_Web', url);
         const fileStream = fs.createReadStream(cssPath, 'UTF-8');
         response.writeHead(200, { 'Content-Type': 'text/css' });
