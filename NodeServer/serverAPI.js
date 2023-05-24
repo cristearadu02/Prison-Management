@@ -80,7 +80,37 @@ const server = http.createServer((req, res) => {
         res.end(JSON.stringify(results));
       }
     });
-  } else {
+  }else if (parsedUrl.pathname === '/api/updateUserInfo') {
+    // Handle POST request to update user info
+    if (req.method === 'POST') {
+      const userId = parsedUrl.query.id;
+      const email = parsedUrl.query.email;
+      const phone = parsedUrl.query.phone;
+
+      // Create a MySQL query to update the user info
+      const query = `UPDATE vizitatori SET email = '${email}', telefon = '${phone}' WHERE id = ${userId}`;
+
+      // Execute the query
+      pool.query(query, (error, results) => {
+        if (error) {
+          console.error('Error executing query: ', error);
+          res.statusCode = 500;
+          res.end('Internal Server Error');
+        } else {
+          res.setHeader('Access-Control-Allow-Origin', '*');
+          res.setHeader('Access-Control-Allow-Methods', 'POST');
+          res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ message: 'User info updated successfully' }));
+        }
+      });
+    } else {
+      res.statusCode = 400;
+      res.end('Bad Request');
+    }
+  }
+  else {
     res.statusCode = 404;
     res.end('Not found');
   }
