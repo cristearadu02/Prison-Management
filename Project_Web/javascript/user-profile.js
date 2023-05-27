@@ -52,64 +52,74 @@ fetch('http://localhost:3005/api/getLoggedUser')
         const cnpInfo = document.getElementById('cnpInfo');
         cnpInfo.textContent = cnp;
 
-        // Update the email info element
+        // Create input fields for email and telefon
         const emailInfo = document.getElementById('emailInfo');
-        emailInfo.textContent = email;
-        
-        //Update the phone info element
+        const emailInput = document.createElement('input');
+        emailInput.value = email;
+        emailInput.classList.add('editable-input');
+        emailInput.addEventListener('click', (event) => {
+          event.stopPropagation(); // Prevent event propagation
+        });
+        emailInfo.appendChild(emailInput);
+
         const phoneInfo = document.getElementById('phoneInfo');
-        phoneInfo.textContent = telefon;
-        
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Handle any errors that occurred during the fetch request
-      });
+        const phoneInput = document.createElement('input');
+        phoneInput.value = telefon;
+        phoneInput.classList.add('editable-input');
+        phoneInput.addEventListener('click', (event) => {
+          event.stopPropagation(); // Prevent event propagation
+        });
+        phoneInfo.appendChild(phoneInput);
 
-    // Update the renderVisits function with the new logged user value
-    function renderVisits(visitsData) {
-      visitsList.innerHTML = '';
-      visitsData.forEach(visit => {
-        const li = document.createElement('li');
+        // Update the renderVisits function with the new logged user value
+        function renderVisits(visitsData) {
+          visitsList.innerHTML = '';
+          visitsData.forEach(visit => {
+            const li = document.createElement('li');
 
-        const visitInfo = document.createElement('div');
-        visitInfo.className = 'visit-info';
+            const visitInfo = document.createElement('div');
+            visitInfo.className = 'visit-info';
 
-        const visitDate = document.createElement('p');
-        visitDate.textContent = `Date: ${new Date(visit.date).toLocaleDateString()}`;
-        visitInfo.appendChild(visitDate);
+            const visitDate = document.createElement('p');
+            visitDate.textContent = `Date: ${new Date(visit.date).toLocaleDateString()}`;
+            visitInfo.appendChild(visitDate);
 
-        const visitName = document.createElement('p');
-        visitName.textContent = `Name: ${visit.name}`;
-        visitInfo.appendChild(visitName);
+            const visitName = document.createElement('p');
+            visitName.textContent = `Name: ${visit.name}`;
+            visitInfo.appendChild(visitName);
 
-        const visitReason = document.createElement('p');
-        visitReason.textContent = `Reason: ${visit.reason}`;
-        visitInfo.appendChild(visitReason);
+            const visitReason = document.createElement('p');
+            visitReason.textContent = `Reason: ${visit.reason}`;
+            visitInfo.appendChild(visitReason);
 
-        const visitOtherInfo = document.createElement('p');
-        visitOtherInfo.textContent = `Other Info: ${visit.otherInfo}`;
-        visitInfo.appendChild(visitOtherInfo);
+            const visitOtherInfo = document.createElement('p');
+            visitOtherInfo.textContent = `Other Info: ${visit.otherInfo}`;
+            visitInfo.appendChild(visitOtherInfo);
 
-        li.appendChild(visitInfo);
-        visitsList.appendChild(li);
-      });
-    }
+            li.appendChild(visitInfo);
+            visitsList.appendChild(li);
+          });
+        }
 
-    // Fetch visit information for the logged user
-    fetch(`http://localhost:3000/api/getVisitsByIDVizitator?id=${loggedUser}`)
-      .then(response => response.json())
-      .then(data => {
-        // Update visitsData array with the fetched data
-        const visitsData = data.map(visit => ({
-          date: visit.dataa,
-          name: visit.detainee_name,
-          reason: visit.motiv_vizita,
-          otherInfo: `Visitor: ${visit.visitor_name}`
-        }));
+        // Fetch visit information for the logged user
+        fetch(`http://localhost:3000/api/getVisitsByIDVizitator?id=${loggedUser}`)
+          .then(response => response.json())
+          .then(data => {
+            // Update visitsData array with the fetched data
+            const visitsData = data.map(visit => ({
+              date: visit.dataa,
+              name: visit.detainee_name,
+              reason: visit.motiv_vizita,
+              otherInfo: `Visitor: ${visit.visitor_name}`
+            }));
 
-        // Call the renderVisits function to update the visits list
-        renderVisits(visitsData);
+            // Call the renderVisits function to update the visits list
+            renderVisits(visitsData);
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            // Handle any errors that occurred during the fetch request
+          });
       })
       .catch(error => {
         console.error('Error:', error);
