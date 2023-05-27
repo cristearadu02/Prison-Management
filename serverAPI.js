@@ -76,7 +76,7 @@ const server = http.createServer((req, res) => {
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
         res.setHeader('Content-Type', 'application/json');
-        console.log(results);
+        //console.log(results);
         res.end(JSON.stringify(results));
       }
     });
@@ -103,6 +103,52 @@ const server = http.createServer((req, res) => {
 
           res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify({ message: 'User info updated successfully' }));
+        }
+      });
+    } else {
+      res.statusCode = 400;
+      res.end('Bad Request');
+    }
+  }else if (parsedUrl.pathname === '/api/changePassword') {
+    // Handle POST request to change password
+    if (req.method === 'POST') {
+      const userId = parsedUrl.query.id;
+      const currentPassword = parsedUrl.query.currentPassword;
+      const newPassword = parsedUrl.query.newPassword;
+  
+      // Create a MySQL query to check if the user exists and the current password is correct
+      const query = `SELECT * FROM vizitatori WHERE id = ${userId} AND parola = '${currentPassword}'`;
+  
+      // Execute the query
+      pool.query(query, (error, results) => {
+        if (error) {
+          console.error('Error executing query: ', error);
+          res.statusCode = 500;
+          res.end('Internal Server Error');
+        } else {
+          if (results.length === 0) {
+            res.statusCode = 400;
+            res.end(JSON.stringify({ message: 'Invalid current password' }));
+          } else {
+            // User and current password are valid, update the password
+            const updateQuery = `UPDATE vizitatori SET parola = '${newPassword}' WHERE id = ${userId}`;
+  
+            // Execute the update query
+            pool.query(updateQuery, (error, updateResults) => {
+              if (error) {
+                console.error('Error executing query: ', error);
+                res.statusCode = 500;
+                res.end('Internal Server Error');
+              } else {
+                res.setHeader('Access-Control-Allow-Origin', '*');
+                res.setHeader('Access-Control-Allow-Methods', 'POST');
+                res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ message: 'Password changed successfully' }));
+              }
+            });
+          }
         }
       });
     } else {

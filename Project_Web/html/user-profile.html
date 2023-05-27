@@ -12,6 +12,7 @@
     <header>
       <div class="logo" onclick="navigateToLink('IndexLogat.html')">Penitenciarul Iași</div>
       <div class="profile">
+        <span class="change-password">Change Password</span>
         <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" >
         <span id="profileName" class="profile-name"></span>
         <div class="dropdown hidden">
@@ -26,6 +27,30 @@
       </div>
       <button class="create-visit" onclick="navigateToLink('Programare.html')">Programare vizită</button>
     </header>
+    <div class="password-popup hidden">
+      <div class="password-form">
+        <div class="form-header">
+          <h2>Change Password</h2>
+          <span class="cancel-password">&#10005;</span> <!-- Add the Cancel button -->
+        </div>
+        <div class="form-group">
+          <label for="currentPassword">Current Password:</label>
+          <input type="password" id="currentPassword" placeholder="Enter current password" required>
+        </div>
+        <div class="form-group">
+          <label for="newPassword">New Password:</label>
+          <input type="password" id="newPassword" placeholder="Enter new password" required>
+        </div>
+        <div class="form-group">
+          <label for="confirmPassword">Confirm Password:</label>
+          <input type="password" id="confirmPassword" placeholder="Confirm new password" required>
+        </div>
+        <div class="form-group">
+          <button class="submit-password">Submit</button>
+        </div>
+      </div>
+    </div>
+    
     <main>
       <div class="content-wrapper">
         <button class="show-visits">Vizitele mele<span class="arrow">&#x25BC;</span></button>

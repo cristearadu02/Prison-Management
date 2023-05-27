@@ -3,6 +3,8 @@ const dropdown = document.querySelector('.dropdown');
 const showVisitsBtn = document.querySelector('.show-visits');
 const visitsList = document.querySelector('.visits-list');
 const changeInfoButton = document.querySelector('.change-info');
+const changePasswordLink = document.querySelector('.change-password');
+
 let userId;
 
 // Fetch the logged user and store the value of userId
@@ -105,7 +107,6 @@ function updateUserInfo() {
       console.log(data.message); // Log the response message
       //add a popup with the message
       alert(data.message);
-
     })
     .catch(error => {
       console.error('Error:', error);
@@ -175,3 +176,72 @@ goTopButton.addEventListener('click', () => {
 function navigateToLink(path) {
   window.location.href = path;
 }
+
+// Toggle password popup
+changePasswordLink.addEventListener('click', (event) => {
+  event.stopPropagation(); // Prevent event propagation
+
+  const passwordPopup = document.querySelector('.password-popup');
+  passwordPopup.classList.toggle('hidden');
+});
+
+// ...existing code...
+
+// Submit password change
+function submitPasswordChange() {
+  // Get password fields
+  const currentPassword = document.getElementById('currentPassword').value;
+  const newPassword = document.getElementById('newPassword').value;
+  const confirmPassword = document.getElementById('confirmPassword').value;
+
+  // Check if passwords match
+  if (newPassword !== confirmPassword) {
+    alert("Passwords don't match");
+    return;
+  }
+
+  const currentPasswordEncoded = encodeURIComponent(currentPassword);
+  const newPasswordEncoded = encodeURIComponent(newPassword);
+
+  const url = `http://localhost:3000/api/changePassword?id=${userId}&currentPassword=${currentPasswordEncoded}&newPassword=${newPasswordEncoded}`;
+
+  fetch(url, { method: 'POST' })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to change password');
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log(data.message); // Log the response message
+      // Clear password fields
+      document.getElementById('currentPassword').value = '';
+      document.getElementById('newPassword').value = '';
+      document.getElementById('confirmPassword').value = '';
+
+      // Close password popup
+      const passwordPopup = document.querySelector('.password-popup');
+      passwordPopup.classList.add('hidden');
+
+      // Display success message to the user
+      alert(data.message);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error changing password');
+    });
+}
+
+
+const submitButton = document.querySelector('.submit-password');
+submitButton.addEventListener('click', submitPasswordChange);
+
+// Hide password change form
+function hidePasswordForm() {
+  const passwordPopup = document.querySelector('.password-popup');
+  passwordPopup.classList.add('hidden');
+}
+
+const cancelBtn = document.querySelector('.cancel-password');
+cancelBtn.addEventListener('click', hidePasswordForm);
+
