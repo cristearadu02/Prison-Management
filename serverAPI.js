@@ -88,7 +88,7 @@ const server = http.createServer((req, res) => {
       const phone = parsedUrl.query.phone;
 
       // Create a MySQL query to update the user info
-      const query = `UPDATE vizitatori SET email = '${email}', telefon = '${phone}' WHERE id = ${userId}`;
+      const query = `UPDATE vizitatori SET email = '${email}', numar_telefon = '${phone}' WHERE id = ${userId}`;
 
       // Execute the query
       pool.query(query, (error, results) => {
