@@ -103,11 +103,13 @@ function updateUserInfo() {
     .then(response => response.json())
     .then(data => {
       console.log(data.message); // Log the response message
-      // Perform any additional actions after updating user info
+      //add a popup with the message
+      alert(data.message);
+
     })
     .catch(error => {
       console.error('Error:', error);
-      // Handle any errors that occurred during the fetch request
+      alert('Error updating user info!');
     });
 }
 

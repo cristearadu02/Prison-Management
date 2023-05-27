@@ -1,0 +1,128 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap');
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-image: url("../resources/Background6.jpg");
+  background-position: center center;
+  background-size: cover;
+  margin: 0;
+}
+
+header {
+  font-family: 'Oswald', sans-serif;
+  background-color:rgba(0,0,0,0.4);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 1rem;
+}
+
+header h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+}
+
+main {
+  font-family: 'Oswald', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: left;
+  height: 100vh;
+  padding: 2rem;
+  color: white;
+}
+
+.profile-info {
+  background-color:rgba(0,0,0,0.4);
+  padding: 1rem;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.profile-info:hover {
+  background-color:rgba(48,213,200,0.8);;
+  color: #333;
+}
+
+.profile-image img {
+  border: 2px solid black;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  margin-right: 1rem;
+}
+
+.profile-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.profile-text h2,
+.profile-text p {
+  margin: 0;
+}
+
+.profile-section {
+  background-color:rgba(0,0,0,0.4);
+  padding: 1rem;
+  border-radius: 10px;
+  transition: all 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.profile-section:hover {
+  background-color:rgba(48,213,200,0.8);;
+  color: #333;
+}
+  
+  .goUp {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    background-color: #3f4041;
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+ .goUp:hover {
+    background-color: #30d5c8;
+    color: #333;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1rem;
+  }
+  
+  .buttons a {
+    text-decoration: none;
+  }
+  
+  button {
+    font-family: 'Oswald', sans-serif;
+    background-color: #3f4041;
+    color: #fff;
+    border-radius: 5px;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+  }
+  
+  button:hover {
+    background-color: #30d5c8;
+    color: #333;
+  }
+  
