@@ -1,11 +1,13 @@
 const profile = document.querySelector('.profile');
 const dropdown = document.querySelector('.dropdown');
-const showVisitsBtn = document.querySelector('.show-visits');
+const showVisitorsBtn = document.querySelector('.show-visitors');
+const visitorsList = document.querySelector('.visitors-list');
 const visitsList = document.querySelector('.visits-list');
 const changeInfoButton = document.querySelector('.change-info');
 const changePasswordLink = document.querySelector('.change-password');
 
-let userId;
+var userId;
+var userRole;
 
 // Fetch the logged user and store the value of userId
 fetch('http://localhost:3005/api/getLoggedUser')
@@ -29,7 +31,7 @@ function fetchUserInfo() {
     .then(response => response.json())
     .then(data => {
       // Extract the necessary information from the response
-      const { nume, prenume, cnp, email, telefon } = data;
+      const { nume, prenume, cnp, email, telefon, rol } = data;
 
       // Update the profile name element
       const profileName = document.getElementById('profileName');
@@ -58,6 +60,22 @@ function fetchUserInfo() {
       });
       phoneInfo.appendChild(phoneInput);
 
+      const roleInfo = document.getElementById('roleInfo');
+      if(rol == 'admin')
+        {
+            roleInfo.textContent = 'Administrator';
+            const createVisit = document.getElementById('createVisit');
+            createVisit.style.display = 'none';
+            fetchVisitorsInfo();
+        }
+        else
+        {
+            roleInfo.textContent = 'Vizitator';
+            const visitsAdmin = document.getElementById('visitorsAdmin');
+            visitsAdmin.style.display = 'none';
+       }
+      userRole = rol;
+      
       // Fetch visit information for the logged user
       fetchVisitsInfo();
     })
@@ -69,6 +87,9 @@ function fetchUserInfo() {
 
 // Fetch visit information for the logged user and update the visits list
 function fetchVisitsInfo() {
+
+  if(userRole == 'user'){
+
   const url = `http://localhost:3000/api/getVisitsByIDVizitator?id=${userId}`;
 
   fetch(url)
@@ -82,16 +103,71 @@ function fetchVisitsInfo() {
         otherInfo: `Relatia: ${visit.relatia} <br> 
                     Natura: ${visit.natura} <br>  
                     Obiecte aduse: ${visit.obiecte_aduse} <br>
-                    Martori: ${visit.martori || 'None'}`
+                    Martori: ${visit.martori || 'Niciunul'}`
       }));
 
-      // Call the renderVisits function to update the visits list
       renderVisits(visitsData);
     })
     .catch(error => {
       console.error('Error:', error);
       // Handle any errors that occurred during the fetch request
     });
+  }
+  else{
+  
+  const url = `http://localhost:3000/api/getVisitsAsAdmin`;
+
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      // Update visitsData array with the fetched data
+      // data will contain motiv_vizita, dataa, nume AS detainee_name, nume AS visitor_name,
+      // relatia, natura, obiecte_aduse, martori
+      const visitsData = data.map(visit => ({
+        date: visit.dataa,
+        name: visit.detainee_name,
+        reason: visit.motiv_vizita,
+        otherInfo: `Vizitator: ${visit.visitor_name} <br>
+                    Relatia: ${visit.relatia} <br>
+                    Natura: ${visit.natura} <br>
+                    Obiecte aduse: ${visit.obiecte_aduse} <br>
+                    Martori: ${visit.martori || 'Niciunul'}`
+      }));
+      renderVisits(visitsData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle any errors that occurred during the fetch request
+    });
+
+  }
+}
+
+function fetchVisitorsInfo() {
+  const url = `http://localhost:3000/api/getUsersAsAdmin`;
+ 
+  fetch(url)
+    .then(response => response.json())
+    .then(data => {
+      // Update visitsorsData array with the fetched data
+      // data will contain nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role
+      const visitorsData = data.map(visitor => ({
+        id: visitor.id,
+        nume: visitor.nume,
+        prenume: visitor.prenume,
+        email: visitor.email,
+        numar_telefon: visitor.numar_telefon,
+        data_nasterii: visitor.data_nasterii,
+        cetatenie: visitor.cetatenie,
+        rol: visitor.role
+      }));
+      renderVisitors(visitorsData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle any errors that occurred during the fetch request
+    }
+  );
 }
 
 // Update the user info on button click
@@ -119,7 +195,6 @@ function updateUserInfo() {
 
 changeInfoButton.addEventListener('click', updateUserInfo);
 
-// Update the renderVisits function
 function renderVisits(visitsData) {
   visitsList.innerHTML = '';
   visitsData.forEach(visit => {
@@ -149,6 +224,95 @@ function renderVisits(visitsData) {
   });
 }
 
+function renderVisitors(visitorsData) {
+  visitorsList.innerHTML = '';
+  visitorsData.forEach(visitor => {
+    const li = document.createElement('li');
+
+    const visitorID = visitor.id;
+
+    const visitorInfo = document.createElement('div');
+    visitorInfo.className = 'visitor-info';
+
+    const visitorName = document.createElement('p');
+    visitorName.textContent = `Nume: ${visitor.nume}`;
+    visitorInfo.appendChild(visitorName);
+
+    const visitorPrenume = document.createElement('p');
+    visitorPrenume.textContent = `Prenume: ${visitor.prenume}`;
+    visitorInfo.appendChild(visitorPrenume);
+
+    const visitorEmail = document.createElement('p');
+    visitorEmail.textContent = `Email: ${visitor.email}`;
+    visitorInfo.appendChild(visitorEmail);
+
+    const visitorPhone = document.createElement('p');
+    visitorPhone.textContent = `Numar telefon: ${visitor.numar_telefon}`;
+    visitorInfo.appendChild(visitorPhone);
+
+    const visitorBirthDate = document.createElement('p');
+    visitorBirthDate.textContent = `Data nasterii: ${visitor.data_nasterii}`;
+    visitorInfo.appendChild(visitorBirthDate);
+
+    const visitorCetatenie = document.createElement('p');
+    visitorCetatenie.textContent = `Cetatenie: ${visitor.cetatenie}`;
+    visitorInfo.appendChild(visitorCetatenie);
+
+    const visitorRol = document.createElement('p');
+    visitorRol.textContent = `Rol: ${visitor.rol}`;
+    visitorInfo.appendChild(visitorRol);
+
+
+
+    //add a button to delete the user, and one to make them an admin, when pressed, send a request to the server to update the user
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Sterge utilizator';
+    //add the listener with delete method
+    deleteButton.addEventListener('click', () => {
+      const url = `http://localhost:3000/api/deleteUser?id=${visitorID}`;
+      fetch(url, { method: 'DELETE' })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data.message); // Log the response message
+          //add a popup with the message
+          alert(data.message);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error deleting user!');
+        });
+    });
+    visitorInfo.appendChild(deleteButton);
+
+    const makeAdminButton = document.createElement('button');
+    makeAdminButton.textContent = 'Promoveaza admin';
+
+    deleteButton.classList.add('delete-button');
+    makeAdminButton.classList.add('admin-button');
+
+    makeAdminButton.addEventListener('click', () => {
+      const url = `http://localhost:3000/api/makeAdmin?id=${visitorID}`;
+      fetch(url, { method: 'PUT' })
+        .then(response => response.json())
+        .then(data => {
+          console.log(data.message); // Log the response message
+          //add a popup with the message
+          alert(data.message);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error making user admin!');
+        });
+    });
+    visitorInfo.appendChild(makeAdminButton);
+
+    li.appendChild(visitorInfo);
+    visitorsList.appendChild(li);
+  });
+}
+    
+
+
 const showVisitsButton = document.querySelector('.show-visits');
 const goTopButton = document.querySelector('.go-top');
 
@@ -159,6 +323,12 @@ profile.addEventListener('click', () => {
 showVisitsButton.addEventListener('click', () => {
   visitsList.classList.toggle('hidden');
   showVisitsButton.classList.toggle('active');
+});
+
+
+showVisitorsBtn.addEventListener('click', () => {
+  visitorsList.classList.toggle('hidden');
+  showVisitorsBtn.classList.toggle('active');
 });
 
 window.addEventListener('scroll', () => {

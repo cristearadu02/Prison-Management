@@ -12,7 +12,7 @@
     <header>
       <div class="logo" onclick="navigateToLink('IndexLogat.html')">Penitenciarul Iași</div>
       <div class="profile">
-        <span class="change-password">Change Password</span>
+        <span class="change-password">Schimba parola</span>
         <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" >
         <span id="profileName" class="profile-name"></span>
         <div class="dropdown hidden">
@@ -20,18 +20,19 @@
           <div class="info">CNP: <p id="cnpInfo"></p></div>
           <div class="info">E-mail: <p id="emailInfo"></p></div>
           <div class="info">Telefon: <p id="phoneInfo"></p></div>
+          <div class="info">Rol: <p id="roleInfo"></p></div>
 
           <button class="change-info">Modificare informații</button>
           <button class="logout" onclick="navigateToLink('Index.html')">Delogare</button>
         </div>
       </div>
-      <button class="create-visit" onclick="navigateToLink('Programare.html')">Programare vizită</button>
+      <button class="create-visit" id="createVisit" onclick="navigateToLink('Programare.html')">Programare vizită</button>
     </header>
     <div class="password-popup hidden">
       <div class="password-form">
         <div class="form-header">
           <h2>Schimba parola</h2>
-          <span class="cancel-password">&#10005;</span> <!-- Add the Cancel button -->
+          <span class="cancel-password">&#10005;</span> 
         </div>
         <div class="form-group">
           <label for="currentPassword">Parola curenta:</label>
@@ -53,7 +54,9 @@
     
     <main>
       <div class="content-wrapper">
-        <button class="show-visits">Vizitele mele<span class="arrow">&#x25BC;</span></button>
+        <button class="show-visitors" id="visitorsAdmin">Administrare vizitatori<span class="arrow">&#x25BC;</span></button>
+        <ul class="visitors-list hidden"></ul>
+        <button class="show-visits" id="visitsName">Vezi istoric vizite<span class="arrow">&#x25BC;</span></button>
         <ul class="visits-list hidden"></ul>
       </div>
     </main>
