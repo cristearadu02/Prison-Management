@@ -55,8 +55,12 @@ var loggedUser = 1;
         response.setHeader('Content-Type', 'application/json');
         response.statusCode = 200;
         response.end(JSON.stringify(loggedUser));
-      }
-      else if (url.match(/\.css$/)) {
+      }else if(url === '/IndexAdmin.html'){
+        const registerPath = path.join(__dirname, 'Project_Web', 'html', 'IndexAdmin.html');
+        response.setHeader('Content-type', 'text/html');
+        response.statusCode = 200;
+        response.end(fs.readFileSync(registerPath, 'utf8'));
+      }else if (url.match(/\.css$/)) {
         const cssPath = path.join(__dirname, 'Project_Web', url);
         const fileStream = fs.createReadStream(cssPath, 'UTF-8');
         response.writeHead(200, { 'Content-Type': 'text/css' });

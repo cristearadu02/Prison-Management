@@ -79,7 +79,10 @@ function fetchVisitsInfo() {
         date: visit.dataa,
         name: visit.detainee_name,
         reason: visit.motiv_vizita,
-        otherInfo: `Visitor: ${visit.visitor_name}`
+        otherInfo: `Relatia: ${visit.relatia} <br> 
+                    Natura: ${visit.natura} <br>  
+                    Obiecte aduse: ${visit.obiecte_aduse} <br>
+                    Martori: ${visit.martori || 'None'}`
       }));
 
       // Call the renderVisits function to update the visits list
@@ -126,19 +129,19 @@ function renderVisits(visitsData) {
     visitInfo.className = 'visit-info';
 
     const visitDate = document.createElement('p');
-    visitDate.textContent = `Date: ${new Date(visit.date).toLocaleDateString()}`;
+    visitDate.textContent = `Data: ${new Date(visit.date).toLocaleDateString()}`;
     visitInfo.appendChild(visitDate);
 
     const visitName = document.createElement('p');
-    visitName.textContent = `Name: ${visit.name}`;
+    visitName.textContent = `Numele: ${visit.name}`;
     visitInfo.appendChild(visitName);
 
     const visitReason = document.createElement('p');
-    visitReason.textContent = `Reason: ${visit.reason}`;
+    visitReason.textContent = `Motivul: ${visit.reason}`;
     visitInfo.appendChild(visitReason);
 
     const visitOtherInfo = document.createElement('p');
-    visitOtherInfo.textContent = `Other Info: ${visit.otherInfo}`;
+    visitOtherInfo.innerHTML = `${visit.otherInfo}`;
     visitInfo.appendChild(visitOtherInfo);
 
     li.appendChild(visitInfo);

@@ -57,7 +57,8 @@ const server = http.createServer((req, res) => {
 
     // Create a MySQL query to join the visits, detainees, and visitors tables
     const query = `
-      SELECT v.motiv_vizita, v.dataa, d.nume AS detainee_name, vi.nume AS visitor_name
+      SELECT v.motiv_vizita, v.dataa, d.nume AS detainee_name, vi.nume AS visitor_name,
+      v.relatia, v.natura, v.obiecte_aduse, v.martori
       FROM vizite v
       INNER JOIN detinuti d ON v.id_detinut = d.id
       INNER JOIN vizitatori vi ON v.id_vizitator = vi.id
@@ -76,11 +77,11 @@ const server = http.createServer((req, res) => {
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
         res.setHeader('Content-Type', 'application/json');
-        //console.log(results);
         res.end(JSON.stringify(results));
       }
     });
-  }else if (parsedUrl.pathname === '/api/updateUserInfo') {
+  }
+else if (parsedUrl.pathname === '/api/updateUserInfo') {
     // Handle POST request to update user info
     if (req.method === 'POST') {
       const userId = parsedUrl.query.id;
