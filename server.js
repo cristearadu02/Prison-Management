@@ -60,6 +60,11 @@ var loggedUser = 1;
         response.setHeader('Content-type', 'text/html');
         response.statusCode = 200;
         response.end(fs.readFileSync(registerPath, 'utf8'));
+      }else if(url === '/IndexCautareConturi.html'){
+        const registerPath = path.join(__dirname, 'Project_Web', 'html', 'IndexCautareConturi.html');
+        response.setHeader('Content-type', 'text/html');
+        response.statusCode = 200;
+        response.end(fs.readFileSync(registerPath, 'utf8'));
       }else if (url.match(/\.css$/)) {
         const cssPath = path.join(__dirname, 'Project_Web', url);
         const fileStream = fs.createReadStream(cssPath, 'UTF-8');

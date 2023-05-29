@@ -154,6 +154,66 @@ else if (parsedUrl.pathname === '/api/updateUserInfo') {
       }
     });
 
+  }else if(parsedUrl.pathname === '/api/findUserByCNP'){
+    //get the cnp from the query parameter and search for the user with that cnp and return it
+    const cnp = parsedUrl.query.cnp;
+    const query = `SELECT id,nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role FROM vizitatori WHERE cnp = '${cnp}'`;
+    pool.query(query, (error, results) => {
+      if (error) {
+        console.error('Error executing query: ', error);
+        res.statusCode = 500;
+        res.end('Internal Server Error');
+      }
+      else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(results));
+      }
+    });
+
+  }else if(parsedUrl.pathname === '/api/findUserByNumePrenume'){  
+    console.log( parsedUrl.query.nume + " " + parsedUrl.query.prenume);
+    //get the name and surname from the query parameter and search for the user with that name and surname and return it
+    const nume = parsedUrl.query.nume;
+    const prenume = parsedUrl.query.prenume;
+    const query = `SELECT id,nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role FROM vizitatori WHERE nume = '${nume}' AND prenume = '${prenume}'`;
+    pool.query(query, (error, results) => {
+      if (error) {
+        console.error('Error executing query: ', error);
+        res.statusCode = 500;
+        res.end('Internal Server Error');
+      }
+      else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(results));
+      }
+    });
+  }else if(parsedUrl.pathname === '/api/findUserByTelefon'){
+    // get the phone number from the query parameter and search for the user with that phone number and return it
+    const numar_telefon = parsedUrl.query.numar_telefon;
+    const query = `SELECT id,nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role FROM vizitatori WHERE numar_telefon = '${numar_telefon}'`;
+    pool.query(query, (error, results) => {
+      if (error) {
+        console.error('Error executing query: ', error);
+        res.statusCode = 500;
+        res.end('Internal Server Error');
+      }
+      else {
+        res.setHeader('Access-Control-Allow-Origin', '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+        res.setHeader('Content-Type', 'application/json');
+        res.end(JSON.stringify(results));
+      }
+    });
   }else if (parsedUrl.pathname === '/api/deleteUser') {
     //the browser first send with options method to check if the server accept delete method
     //if the server accept delete method then the browser send the delete request

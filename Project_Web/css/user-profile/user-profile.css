@@ -237,7 +237,7 @@ main {
   color: #333;
 }
 
-.show-visits {
+.show-visits, .search-engine {
   font-family: 'Oswald', sans-serif;
   padding: 10px 20px;
   font-size: 18px;
@@ -280,7 +280,7 @@ main {
   display: inline-block;
   padding: 5px 10px;
   margin-right: 5px;
-  background-color: #30d5c8; /* Change the background color as desired */
+  background-color: #30d5c8; 
   color: #fff;
   border: none;
   border-radius: 5px;
@@ -295,7 +295,7 @@ main {
 
 .admin-button:hover {
   color: #333;
-  background-color: #00ff37; /* Change the hover background color as desired */
+  background-color: #00ff37; 
 }
 
 
@@ -424,5 +424,3 @@ main {
     font-size: 10px;
   }
 }/*# sourceMappingURL=user-profile.css.map */
-
-
