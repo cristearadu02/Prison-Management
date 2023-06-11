@@ -5,6 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.25">
         <link rel="stylesheet" href="../css/Programare.css">
+        <script src="../javascript/programare.js" defer></script>
         <title>Programare vizita</title>
 
     </head>
@@ -25,7 +26,7 @@
             <div class="form-container">
                 <h1 class="title">Formular inregistrare intalnire</h1> 
             
-        <form action="de_implementat" method="POST">
+        <form id = "programare-form" method="post" action="http://localhost:3000/api/getAppointment" >
             
 
             <label for="Nume_viz">Nume vizitator</label>

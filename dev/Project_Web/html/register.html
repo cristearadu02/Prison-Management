@@ -17,10 +17,10 @@
   <main>
     <div class="form-container">
       <h2>Înregistrare</h2>
-      <form>
+      <form id = "register-form">
         <div class="image-input">
           <label for="image-upload">Adăugați o imagine cu dumnevoastră:</label>
-          <input type="file" id="image-upload" name="image-upload" accept="image/*" onchange="previewImage(event)" required>
+          <input type="file" id="image-upload" name="image-upload" accept="image/*" onchange="previewImage(event)" >
           <img id="image-preview" src="#" alt="Uploaded Image" style="display:none;">
         </div>
         <label for="cnp">CNP (cod numeric personal):</label>
