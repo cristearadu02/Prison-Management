@@ -6,7 +6,7 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword , validateCNP } = require('./utilitary');
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -201,19 +201,16 @@ const server = http.createServer((req, res) => {
       }
     });
   } else if (parsedUrl.pathname === '/api/getVisitsByIDVizitator') {
-    // Extract the visitor ID from the query parameter
-    const visitorId = parsedUrl.query.id;
-
+    // Extract the visitor CNP from the query parameter
+    const visitorCNP = parsedUrl.query.cnp;
+  
     // Create a MySQL query to join the visits, detainees, and visitors tables
     const query = `
-      SELECT v.motiv_vizita, v.dataa, d.nume AS detainee_name, vi.nume AS visitor_name,
-      v.relatia, v.natura, v.obiecte_aduse, v.martori
+      SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor
       FROM vizite v
-      INNER JOIN detinuti d ON v.id_detinut = d.id
-      INNER JOIN vizitatori vi ON v.id_vizitator = vi.id
-      WHERE v.id_vizitator = ${visitorId}
+      WHERE v.cnp = '${visitorCNP}'
     `;
-
+  
     // Execute the query
     pool.query(query, (error, results) => {
       if (error) {
@@ -224,7 +221,7 @@ const server = http.createServer((req, res) => {
         res.setHeader('Access-Control-Allow-Origin', '*');
         res.setHeader('Access-Control-Allow-Methods', 'GET');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-
+  
         res.setHeader('Content-Type', 'application/json');
         res.end(JSON.stringify(results));
       }
@@ -261,12 +258,12 @@ else if (parsedUrl.pathname === '/api/updateUserInfo') {
     }
   }else if(parsedUrl.pathname === '/api/getVisitsAsAdmin'){
     // get all the data from table vizite order by date desc
-    const query = `SELECT v.motiv_vizita, v.dataa, d.nume AS detainee_name, vi.nume AS visitor_name,
-                    v.relatia, v.natura, v.obiecte_aduse, v.martori
+    const query = `SELECT v.natura_vizitei, v.data_vizitei, d.nume AS detainee_name, vi.nume AS visitor_name,
+                    v.relatia, v.obiecte_de_livrat, v.nume_martor,v.prenume_martor,v.relatia_detinut_martor
                     FROM vizite v
                     INNER JOIN detinuti d ON v.id_detinut = d.id
                     INNER JOIN vizitatori vi ON v.id_vizitator = vi.id
-                    ORDER BY v.dataa DESC`;
+                    ORDER BY v.data_vizitei DESC`;
     pool.query(query, (error, results) => {
       if (error) {
         console.error('Error executing query: ', error);
@@ -466,7 +463,75 @@ else if (parsedUrl.pathname === '/api/updateUserInfo') {
       res.statusCode = 400;
       res.end('Bad Request');
     }
+  }else if(parsedUrl.pathname == '/api/getAppointment' && req.method == 'POST'){
+      //Parse the body
+    
+    let body = ' ';
+    req.on('data', chunk => {
+      body += chunk.toString(); // convert Buffer to string
+    });
+    req.on('end', () => {
+      const appointmentInfo = JSON.parse(body);
+
+      validateCNP(appointmentInfo.cnp,appointmentInfo.nume,pool).then(errors => {
+        if(errors.length > 0){
+          res.setHeader('Content-Type', 'application/json');
+            res.statusCode = 400; // Bad Request
+            res.end(JSON.stringify({ message: 'Validation failed', errors: errors }));
+            console.log(...errors);
+        } else {
+          const query = `
+          INSERT INTO vizite (
+            nume,
+            prenume,
+            cnp,
+            nume_detinut,
+            prenume_detinut,
+            relatia,
+            natura_vizitei,
+            data_vizitei,
+            obiecte_de_livrat,
+            nume_martor,
+            prenume_martor,
+            relatia_detinut_martor 
+          ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+          pool.query(
+            query,[
+              appointmentInfo.nume,
+              appointmentInfo.prenume, 
+              appointmentInfo.cnp,
+              appointmentInfo.nume_detinut,
+              appointmentInfo.prenume_detinut,
+              appointmentInfo.relatia,
+              appointmentInfo.natura_vizitei,
+              appointmentInfo.data_vizitei,
+              appointmentInfo.obiecte_de_livrat,
+              appointmentInfo.nume_martor,
+              appointmentInfo.prenume_martor,
+              appointmentInfo.relatia_detinut_martor,
+
+            ],
+            (error, results) => {
+              if (error) {
+                console.error('Error executing query: ', error);
+                res.statusCode = 500;
+                res.end(JSON.stringify({ message: 'Internal Server Error!' }));
+              } else {
+                res.setHeader('Content-Type', 'application/json');
+                res.statusCode = 201; // Created
+                res.end(JSON.stringify({ message: 'User registered successfully' }));
+              }
+            }
+          );
+        }
+      }) .catch(error => {
+        console.error('Error during validation:', error);
+          res.statusCode = 500;
+          res.end(JSON.stringify({ message: 'Internal Server Error' }));
+      });
+    });
   }
+
   else {
     res.statusCode = 404;
     res.end('Not found');
