@@ -7,7 +7,9 @@ const changeInfoButton = document.querySelector('.change-info');
 const changePasswordLink = document.querySelector('.change-password');
 
 var userId;
+var cnp;
 var userRole;
+var data;
 
 var jwt = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 console.log(jwt);
@@ -80,61 +82,60 @@ function fetchUserInfo() {
 
 // Fetch visit information for the logged user and update the visits list
 function fetchVisitsInfo() {
+  if (userRole === 'user') {
+  let cnp =  cnpInfo.textContent;
+    if (!cnp) {
+      console.error('CNP is missing');
+      return;
+    }
+    const url = `http://localhost:3000/api/getVisitsByIDVizitator?cnp=${cnp}`;
 
-  if(userRole == 'user'){
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Update visitsData array with the fetched data
+        const visitsData = data.map(visit => ({
+          date: visit.data_vizitei,
+          name: visit.nume_detinut,
+          reason: visit.motiv_vizita,
+          otherInfo: `Relatia: ${visit.relatia} <br> 
+                      Natura: ${visit.natura_vizitei} <br>  
+                      Obiecte aduse: ${visit.obiecte_de_livrat || 'Niciunul'} <br>
+                      Martori: ${visit.nume_martor ? `${visit.nume_martor} ${visit.prenume_martor}` : 'Niciunul'}`
+        }));
 
-  const url = `http://localhost:3000/api/getVisitsByIDVizitator?id=${userId}`;
+        renderVisits(visitsData);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle any errors that occurred during the fetch request
+      });
+  } else {
+    const url = `http://localhost:3000/api/getVisitsAsAdmin`;
 
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      // Update visitsData array with the fetched data
-      const visitsData = data.map(visit => ({
-        date: visit.dataa,
-        name: visit.detainee_name,
-        reason: visit.motiv_vizita,
-        otherInfo: `Relatia: ${visit.relatia} <br> 
-                    Natura: ${visit.natura} <br>  
-                    Obiecte aduse: ${visit.obiecte_aduse} <br>
-                    Martori: ${visit.martori || 'Niciunul'}`
-      }));
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        // Update visitsData array with the fetched data
+        const visitsData = data.map(visit => ({
+          date: visit.data_vizitei,
+          name: `${visit.nume} ${visit.prenume}`,
+          detaineeName: `${visit.nume_detinut} ${visit.prenume_detinut}`,
+          relationship: visit.relatia,
+          visitNature: visit.natura_vizitei,
+          objectsDelivered: visit.obiecte_de_livrat || 'Niciunul',
+          witness: visit.nume_martor ? `${visit.nume_martor} ${visit.prenume_martor}` : 'Niciunul'
+        }));
 
-      renderVisits(visitsData);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      // Handle any errors that occurred during the fetch request
-    });
-  }
-  else{
-  
-  const url = `http://localhost:3000/api/getVisitsAsAdmin`;
-
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      // Update visitsData array with the fetched data
-      // data will contain motiv_vizita, dataa, nume AS detainee_name, nume AS visitor_name,
-      // relatia, natura, obiecte_aduse, martori
-      const visitsData = data.map(visit => ({
-        date: visit.dataa,
-        name: visit.detainee_name,
-        reason: visit.motiv_vizita,
-        otherInfo: `Vizitator: ${visit.visitor_name} <br>
-                    Relatia: ${visit.relatia} <br>
-                    Natura: ${visit.natura} <br>
-                    Obiecte aduse: ${visit.obiecte_aduse} <br>
-                    Martori: ${visit.martori || 'Niciunul'}`
-      }));
-      renderVisits(visitsData);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      // Handle any errors that occurred during the fetch request
-    });
-
+        renderVisits(visitsData);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        // Handle any errors that occurred during the fetch request
+      });
   }
 }
+
 
 function fetchVisitorsInfo() {
   const url = `http://localhost:3000/api/getUsersAsAdmin`;
