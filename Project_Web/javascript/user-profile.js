@@ -9,26 +9,19 @@ const changePasswordLink = document.querySelector('.change-password');
 var userId;
 var userRole;
 
-// Fetch the logged user and store the value of userId
-fetch('http://localhost:3005/api/getLoggedUser')
-  .then(response => response.json())
-  .then(loggedUser => {
-    userId = encodeURIComponent(loggedUser);
-
-    // Fetch user information and update the UI
-    fetchUserInfo();
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    // Handle any errors that occurred during the fetch request
-  });
+var jwt = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+console.log(jwt);
+fetchUserInfo();
 
 // Fetch user information and update the UI
 function fetchUserInfo() {
-  const url = `http://localhost:3000/api/getInfoByID?id=${userId}`;
-
-  fetch(url)
-    .then(response => response.json())
+  fetch('http://localhost:3000/api/getInfoByID', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+        'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
     .then(data => {
       // Extract the necessary information from the response
       const { nume, prenume, cnp, email, telefon, rol } = data;
@@ -73,6 +66,10 @@ function fetchUserInfo() {
             roleInfo.textContent = 'Vizitator';
             const visitsAdmin = document.getElementById('visitorsAdmin');
             visitsAdmin.style.display = 'none';
+            const v1 = document.getElementById('visitors1');
+            v1.style.display = 'none';
+            const v2 = document.getElementById('visitors2');
+            v2.style.display = 'none';
        }
       userRole = rol;
       
@@ -90,20 +87,23 @@ function fetchVisitsInfo() {
 
   if(userRole == 'user'){
 
-  const url = `http://localhost:3000/api/getVisitsByIDVizitator?id=${userId}`;
-
-  fetch(url)
-    .then(response => response.json())
+  fetch('http://localhost:3000/api/getVisitsByIDVizitator', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
     .then(data => {
       // Update visitsData array with the fetched data
       const visitsData = data.map(visit => ({
-        date: visit.dataa,
-        name: visit.detainee_name,
+        date: visit.data_vizitei,
+        name: visit.nume_detinut,
         reason: visit.motiv_vizita,
         otherInfo: `Relatia: ${visit.relatia} <br> 
-                    Natura: ${visit.natura} <br>  
-                    Obiecte aduse: ${visit.obiecte_aduse} <br>
-                    Martori: ${visit.martori || 'Niciunul'}`
+                    Natura: ${visit.natura_vizitei} <br>  
+                    Obiecte aduse: ${visit.obiecte_de_livrat || 'Niciunul'} <br>
+                    Martori: ${visit.nume_martor ? `${visit.nume_martor} ${visit.prenume_martor}` : 'Niciunul'}`
       }));
 
       renderVisits(visitsData);
@@ -114,24 +114,25 @@ function fetchVisitsInfo() {
     });
   }
   else{
-  
-  const url = `http://localhost:3000/api/getVisitsAsAdmin`;
-
-  fetch(url)
-    .then(response => response.json())
+  fetch('http://localhost:3000/api/getVisitsAsAdmin', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
     .then(data => {
       // Update visitsData array with the fetched data
       // data will contain motiv_vizita, dataa, nume AS detainee_name, nume AS visitor_name,
       // relatia, natura, obiecte_aduse, martori
       const visitsData = data.map(visit => ({
-        date: visit.dataa,
-        name: visit.detainee_name,
-        reason: visit.motiv_vizita,
-        otherInfo: `Vizitator: ${visit.visitor_name} <br>
+        date: visit.data_vizitei,
+        name: visit.nume_detinut + " " + visit.prenume_detinut,
+        reason: visit.natura_vizitei + ", " + visit.relatia,
+        otherInfo: `Vizitator: ${visit.nume} ${visit.prenume} <br>
                     Relatia: ${visit.relatia} <br>
-                    Natura: ${visit.natura} <br>
-                    Obiecte aduse: ${visit.obiecte_aduse} <br>
-                    Martori: ${visit.martori || 'Niciunul'}`
+                    Obiecte aduse: ${visit.obiecte_de_livrat} <br>
+                    Martori: ${visit.nume_martor || 'Niciunul'}`
       }));
       renderVisits(visitsData);
     })
@@ -178,17 +179,22 @@ function updateUserInfo() {
   const email = encodeURIComponent(emailInput.value);
   const phone = encodeURIComponent(phoneInput.value);
 
-  const url = `http://localhost:3000/api/updateUserInfo?id=${userId}&email=${email}&phone=${phone}`;
+  const url = `http://localhost:3000/api/updateUserInfo?email=${email}&phone=${phone}`;
 
-  fetch(url, { method: 'POST' })
-    .then(response => response.json())
-    .then(data => {
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
+  .then(data => {
       console.log(data.message); // Log the response message
       //add a popup with the message
       alert(data.message);
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.log('Error:', error);
       alert('Error updating user info!');
     });
 }
@@ -270,7 +276,13 @@ function renderVisitors(visitorsData) {
     //add the listener with delete method
     deleteButton.addEventListener('click', () => {
       const url = `http://localhost:3000/api/deleteUser?id=${visitorID}`;
-      fetch(url, { method: 'DELETE' })
+      fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': jwt // The JWT already includes 'Bearer' prefix
+        }
+        })
         .then(response => response.json())
         .then(data => {
           console.log(data.message); // Log the response message
@@ -292,8 +304,14 @@ function renderVisitors(visitorsData) {
 
     makeAdminButton.addEventListener('click', () => {
       const url = `http://localhost:3000/api/makeAdmin?id=${visitorID}`;
-      fetch(url, { method: 'PUT' })
-        .then(response => response.json())
+      fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+    })
+    .then(response => response.json())
         .then(data => {
           console.log(data.message); // Log the response message
           //add a popup with the message
@@ -301,7 +319,7 @@ function renderVisitors(visitorsData) {
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('Error making user admin!');
+          alert(error.message);
         });
     });
     visitorInfo.appendChild(makeAdminButton);
@@ -358,7 +376,6 @@ changePasswordLink.addEventListener('click', (event) => {
   passwordPopup.classList.toggle('hidden');
 });
 
-// ...existing code...
 
 // Submit password change
 function submitPasswordChange() {
@@ -376,10 +393,13 @@ function submitPasswordChange() {
   const currentPasswordEncoded = encodeURIComponent(currentPassword);
   const newPasswordEncoded = encodeURIComponent(newPassword);
 
-  const url = `http://localhost:3000/api/changePassword?id=${userId}&currentPassword=${currentPasswordEncoded}&newPassword=${newPasswordEncoded}`;
-
-  fetch(url, { method: 'POST' })
-    .then(response => {
+  fetch(`http://localhost:3000/api/changePassword?&currentPassword=${currentPasswordEncoded}&newPassword=${newPasswordEncoded}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => {
       if (!response.ok) {
         throw new Error('Failed to change password');
       }
@@ -400,8 +420,8 @@ function submitPasswordChange() {
       alert(data.message);
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert('Error changing password');
+      console.log('Error:', error);
+      alert('Parola curenta nu este corecta!');
     });
 }
 

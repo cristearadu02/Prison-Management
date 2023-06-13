@@ -20,7 +20,15 @@ var loggedUser = 1;
   const server = http.createServer((request, response) => {
     const { method, url } = request;
   
-    if (method === 'GET') {
+   if (method === 'OPTIONS') {
+      // Preflight request. Reply successfully:
+      res.setHeader('Access-Control-Allow-Origin', 'http://localhost:3005');
+      res.setHeader('Access-Control-Allow-Methods', 'GET');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+      res.end();
+      return;
+    }
+    else if (method === 'GET') {
       if (url === '/') {
         const indexPath = path.join(__dirname, 'Project_Web', 'html', 'Index.html');
         response.setHeader('Content-type', 'text/html');
@@ -35,6 +43,7 @@ var loggedUser = 1;
         response.end(fs.readFileSync(loginPath, 'utf8'));
       } else if (url === '/register.html') {
         // Si aici tot tu Andrei
+        console.log(url);
         const registerPath = path.join(__dirname, 'Project_Web', 'html', 'register.html');
         response.setHeader('Content-type', 'text/html');
         response.statusCode = 200;
@@ -55,11 +64,6 @@ var loggedUser = 1;
         response.setHeader('Content-Type', 'application/json');
         response.statusCode = 200;
         response.end(JSON.stringify(loggedUser));
-      }else if(url === '/IndexAdmin.html'){
-        const registerPath = path.join(__dirname, 'Project_Web', 'html', 'IndexAdmin.html');
-        response.setHeader('Content-type', 'text/html');
-        response.statusCode = 200;
-        response.end(fs.readFileSync(registerPath, 'utf8'));
       }else if(url === '/IndexCautareConturi.html'){
         const registerPath = path.join(__dirname, 'Project_Web', 'html', 'IndexCautareConturi.html');
         response.setHeader('Content-type', 'text/html');
@@ -105,4 +109,3 @@ var loggedUser = 1;
 server.listen(port, host, () => { 
     console.log(`Server running at http://${host}:${port}/`);
 });
-

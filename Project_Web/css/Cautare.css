@@ -166,6 +166,27 @@
     color: #333;
     background-color: #00ff37; 
   }
+
+  .visits-list {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    opacity: 0.9;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 20px;
+    list-style-type: none;
+    margin-top: 10px;
+  }
+  .visits-list li {
+    padding: 10px;
+    border-bottom: 1px solid #e3e3e3;
+    display: flex;
+    justify-content: space-between;
+  }
+  .visits-list li:last-child {
+    border-bottom: none;
+  }
   
   
   @media (max-width: 767px) {

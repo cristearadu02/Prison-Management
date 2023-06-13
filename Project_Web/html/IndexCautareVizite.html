@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="../css/Cautare.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald&display=swap">
+  <title>Penitenciarul Iași | Profil</title>
+</head>
+<body>
+    <header>
+        <div class="logo" onclick="navigateToLink('IndexLogat.html')">Penitenciarul Iași</div>
+      </header>
+    
+    <div class="search-bar">
+      <input type="text" id="searchInput" placeholder="Search...">
+    </div>
+    <div class="search-buttons">
+        <button class="search-buttons" id="DataStartFinal">Data Start - Data Final</button>
+        <button class="search-buttons" id="NumePrenumeDetinut">Detinut</button>
+        <button class="search-buttons" id="NumePrenumeVizitator">Vizitator</button>
+      </div>
+    <div id="searchResults"></div>
+  
+    <button class="go-top hidden">Du-te sus</button>
+  
+    <!-- Include the JavaScript code to handle the search functionality -->
+    <script src="../javascript/cautareVizite.js" defer></script>
+  </body>
+  
+</html>
