@@ -6,7 +6,7 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate } = require('./utilitary');
 const { parse } = require('path');
 
 // Create a MySQL connection pool
@@ -1115,7 +1115,73 @@ const server = http.createServer((req, res) => {
       res.statusCode = 400;
       res.end('Bad Request');
     }
+  }else if (parsedUrl.pathname === '/api/addInmate' && req.method === "POST") {
+        let body = ' ';
+        req.on('data', chunk => {
+          body += chunk.toString(); // convert Buffer to string
+        });
+        req.on('end', () => {
+          const inmateInfo = JSON.parse(body);
+  
+          validateInmate(
+            inmateInfo.cnp,
+            inmateInfo.data_inceperii_sentintei,
+            inmateInfo.data_sfarsirii_sentintei,
+            inmateInfo.gradul,
+            pool
+          )
+            .then(errors => {
+              if (errors.length > 0) {
+                res.setHeader('Content-Type', 'application/json');
+                res.statusCode = 400; // Bad Request
+                res.end(JSON.stringify({ message: 'Validation failed', errors: errors }));
+                console.log(...errors);
+              } else {
+                const query = `
+                INSERT INTO detinuti (
+                  nume,
+                  prenume,
+                  cnp,
+                  motivul_detinerii,
+                  gradul,
+                  data_inceperii_sentintei,
+                  data_sfarsirii_sentintei
+                ) VALUES (?,?,?,?,?,?,?)`;
+                pool.query(
+                  query,
+                  [
+                    inmateInfo.nume,
+                    inmateInfo.prenume,
+                    inmateInfo.cnp,
+                    inmateInfo.motivul,
+                    inmateInfo.gradul,
+                    inmateInfo.data_inceperii_sentintei,
+                    inmateInfo.data_sfarsirii_sentintei,
+                  ],
+                  (error, results) => {
+                    if (error) {
+                      console.error('Error executing query: ', error);
+                      res.statusCode = 500;
+                      res.end(JSON.stringify({ message: 'Internal Server Error!' }));
+                    } else {
+                      res.setHeader('Content-Type', 'application/json');
+                      res.statusCode = 201; // Created
+                      res.end(JSON.stringify({ message: 'Inmate registered successfully' }));
+                    }
+                  }
+                );
+              }
+            })
+            .catch(error => {
+              console.error('Error during validation:', error);
+              res.statusCode = 500;
+              res.end(JSON.stringify({ message: 'Internal Server Error' }));
+            });
+        });
+    
   }
+  
+  
   else {
     res.statusCode = 404;
     res.end('Not found');

@@ -131,6 +131,23 @@
 		justify-content: center;
     border-radius: 5px;
   }
+  form#formular-inregistrare-detinut {
+    display: flex;
+    flex-basis: 27%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    margin-top: 2rem;
+    margin-bottom: 0.1rem;
+    max-width: 500px;
+    border: 2px solid #30D5C8;
+    padding: 3rem;
+    background-color: #3E363F;
+    border-radius: 5px;
+  }
+  
+  
 
     .right-image-container {
 			flex-basis: 27%;
