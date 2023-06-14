@@ -70,6 +70,8 @@ function fetchUserInfo() {
             v1.style.display = 'none';
             const v2 = document.getElementById('visitors2');
             v2.style.display = 'none';
+            const deteinee = document.getElementById('detainee');
+            deteinee.style.display = 'none';
        }
       userRole = rol;
       

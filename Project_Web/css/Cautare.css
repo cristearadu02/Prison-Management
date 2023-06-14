@@ -144,7 +144,7 @@
   }
 
 
-  .delete-button, .admin-button {
+  .delete-button, .admin-button, .verifyButton, .rejectButton {
     font-family: 'Oswald', sans-serif;
     display: inline-block;
     padding: 5px 10px;
@@ -157,12 +157,12 @@
     transition: background-color 0.3s ease;
   }
   
-  .delete-button:hover {
+  .delete-button:hover, .rejectButton:hover {
     color: #333;
     background-color: #ff0000; 
   }
   
-  .admin-button:hover {
+  .admin-button:hover, .verifyButton:hover {
     color: #333;
     background-color: #00ff37; 
   }

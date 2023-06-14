@@ -71,7 +71,33 @@ const validateData = (data, pool) => {
     });
   };
 
-
+  const validateCNP = (cnp,name, pool) => {
+    return new Promise((resolve, reject) => {
+      const errors = [];
+  
+      // Validate CNP (should be unique and numeric)
+      if (!cnp || !/^\d{13}$/.test(cnp)) {
+        errors.push('Invalid CNP. The CNP should have exactly 13 digits.');
+      }
+  
+      // Check if CNP exists
+      pool.query(
+        'SELECT * FROM vizitatori WHERE cnp = ? AND nume = ?',
+        [cnp, name],
+        (err, results) => {
+          if (err) {
+            reject(err);
+          }
+  
+        if (results && results.length === 0) {
+          errors.push('CNP and name do not match.');
+        }
+  
+        // Resolve the errors
+        resolve(errors);
+      });
+    });
+  };
 
 
   function findUserByCNP(cnp, password, pool) {
@@ -114,4 +140,4 @@ const validateData = (data, pool) => {
   }
   
 
-  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword};
+  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP};

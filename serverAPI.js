@@ -6,7 +6,8 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword, findUserByID } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP } = require('./utilitary');
+const { parse } = require('path');
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
@@ -343,7 +344,226 @@ const server = http.createServer((req, res) => {
         });
       }
     });
-  } else if (parsedUrl.pathname === '/api/getUsersAsAdmin') {
+  } else if (parsedUrl.pathname === '/api/getNotVerifiedVisitsAsAdmin') {
+
+    const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
+    console.log(bearerToken);
+
+    // Remove 'Bearer ' prefix
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    console.log(token);
+
+    // Verify and decode the JWT
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+
+      } else {
+
+        //this query should take v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status from vizite where status = not verified
+
+        const query = `
+        SELECT v.id, v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status
+        FROM vizite v
+        WHERE v.status = 'not verified'`;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query: ', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          }
+          else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        }
+        );
+
+      }
+    });
+  } else if (parsedUrl.pathname === '/api/changeVisitStatus') {
+    if (req.method === 'OPTIONS') {
+      res.statusCode = 200;
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'PUT');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      res.end();
+    } else if (req.method === 'PUT') {
+
+      const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
+      console.log(bearerToken);
+
+      // Remove 'Bearer ' prefix
+      const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+      console.log(token);
+
+      // Verify and decode the JWT
+
+      jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+          console.error('Failed to verify JWT: ', err);
+          res.statusCode = 401;
+          res.end(JSON.stringify({ message: 'Unauthorized' }));
+
+        } else {
+          const visitId = parsedUrl.query.id;
+          console.log('VISIT ID: ____________',visitId);
+          const query = `
+        UPDATE vizite
+        SET status = 'verified'
+        WHERE id = ${visitId}`;
+
+          pool.query(query, (error, results) => {
+            if (error) {
+              console.error('Error executing query: ', error);
+              res.statusCode = 500;
+              res.end('Internal Server Error');
+            }
+            else {
+              res.setHeader('Access-Control-Allow-Origin', '*');
+              res.setHeader('Access-Control-Allow-Methods', 'POST');
+              res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(results));
+            }
+          }
+          );
+        }
+      });
+
+    }
+  }else if (parsedUrl.pathname === '/api/changeVisitStatusRejected') {
+    if (req.method === 'OPTIONS') {
+      res.statusCode = 200;
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'PUT');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      res.end();
+    } else if (req.method === 'PUT') {
+
+      const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
+      console.log(bearerToken);
+
+      // Remove 'Bearer ' prefix
+      const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+      console.log(token);
+
+      // Verify and decode the JWT
+
+      jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+          console.error('Failed to verify JWT: ', err);N
+          res.statusCode = 401;
+          res.end(JSON.stringify({ message: 'Unauthorized' }));
+
+        } else {
+          const visitId = parsedUrl.query.id;
+          console.log('VISIT ID: ____________',visitId);
+          const query = `
+        UPDATE vizite
+        SET status = 'rejected'
+        WHERE id = ${visitId}`;
+
+          pool.query(query, (error, results) => {
+            if (error) {
+              console.error('Error executing query: ', error);
+              res.statusCode = 500;
+              res.end('Internal Server Error');
+            }
+            else {
+              res.setHeader('Access-Control-Allow-Origin', '*');
+              res.setHeader('Access-Control-Allow-Methods', 'POST');
+              res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify(results));
+            }
+          }
+          );
+        }
+      });
+
+    }
+  }else if(parsedUrl.pathname == '/api/getAppointment' && req.method == 'POST'){
+    //Parse the body
+  
+  let body = ' ';
+  req.on('data', chunk => {
+    body += chunk.toString(); // convert Buffer to string
+  });
+  req.on('end', () => {
+    const appointmentInfo = JSON.parse(body);
+
+    validateCNP(appointmentInfo.cnp,appointmentInfo.nume,pool).then(errors => {
+      if(errors.length > 0){
+        res.setHeader('Content-Type', 'application/json');
+          res.statusCode = 400; // Bad Request
+          res.end(JSON.stringify({ message: 'Validation failed', errors: errors }));
+          console.log(...errors);
+      } else {
+        const query = `
+        INSERT INTO vizite (
+          nume,
+          prenume,
+          cnp,
+          nume_detinut,
+          prenume_detinut,
+          relatia,
+          natura_vizitei,
+          data_vizitei,
+          obiecte_de_livrat,
+          nume_martor,
+          prenume_martor,
+          relatia_detinut_martor 
+        ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)`;
+        pool.query(
+          query,[
+            appointmentInfo.nume,
+            appointmentInfo.prenume, 
+            appointmentInfo.cnp,
+            appointmentInfo.nume_detinut,
+            appointmentInfo.prenume_detinut,
+            appointmentInfo.relatia,
+            appointmentInfo.natura_vizitei,
+            appointmentInfo.data_vizitei,
+            appointmentInfo.obiecte_de_livrat,
+            appointmentInfo.nume_martor,
+            appointmentInfo.prenume_martor,
+            appointmentInfo.relatia_detinut_martor,
+
+          ],
+          (error, results) => {
+            if (error) {
+              console.error('Error executing query: ', error);
+              res.statusCode = 500;
+              res.end(JSON.stringify({ message: 'Internal Server Error!' }));
+            } else {
+              res.setHeader('Content-Type', 'application/json');
+              res.statusCode = 201; // Created
+              res.end(JSON.stringify({ message: 'User registered successfully' }));
+            }
+          }
+        );
+      }
+    }) .catch(error => {
+      console.error('Error during validation:', error);
+        res.statusCode = 500;
+        res.end(JSON.stringify({ message: 'Internal Server Error' }));
+    });
+  });
+}else if (parsedUrl.pathname === '/api/getUsersAsAdmin') {
 
     const query = `SELECT id,nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role FROM vizitatori ORDER BY role`;
     pool.query(query, (error, results) => {
@@ -563,7 +783,7 @@ const server = http.createServer((req, res) => {
       res.statusCode = 400;
       res.end('Bad Request');
     }
-  }else if(parsedUrl.pathname ==='/api/findVisitsByVisitorName'){
+  } else if (parsedUrl.pathname === '/api/findVisitsByVisitorName') {
 
     const bearerToken = req.headers.authorization;
     const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
@@ -577,7 +797,7 @@ const server = http.createServer((req, res) => {
         const nume = parsedUrl.query.nume;
         const prenume = parsedUrl.query.prenume;
         const query = `
-        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor
+        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status
         FROM vizite v
         WHERE v.nume = '${nume}' and v.prenume = '${prenume}'`;
         pool.query(query, (error, results) => {
@@ -596,8 +816,7 @@ const server = http.createServer((req, res) => {
       }
     });
 
-  }else if(parsedUrl.pathname === '/api/findVisitsByDeteineeName')
-  {
+  } else if (parsedUrl.pathname === '/api/findVisitsByDeteineeName') {
     const bearerToken = req.headers.authorization;
     const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
 
@@ -610,7 +829,7 @@ const server = http.createServer((req, res) => {
         const nume = parsedUrl.query.nume;
         const prenume = parsedUrl.query.prenume;
         const query = `
-        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor
+        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status
         FROM vizite v
         WHERE v.nume_detinut = '${nume}' and v.prenume_detinut = '${prenume}'`;
         pool.query(query, (error, results) => {
@@ -629,8 +848,7 @@ const server = http.createServer((req, res) => {
       }
     });
 
-  }else if(parsedUrl.pathname === '/api/findVisitsByDate')
-  {
+  } else if (parsedUrl.pathname === '/api/findVisitsByDate') {
     const bearerToken = req.headers.authorization;
     const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
 
@@ -642,11 +860,11 @@ const server = http.createServer((req, res) => {
       } else {
         const dataStart = parsedUrl.query.dataStart;
         const dataEnd = parsedUrl.query.dataEnd;
-        
+
         const query = `
-        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor
+        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status
         FROM vizite v
-        WHERE v.data_vizitei >= '${dataStart}' and v.data_vizitei <= '${dataEnd}'`; 
+        WHERE v.data_vizitei >= '${dataStart}' and v.data_vizitei <= '${dataEnd}'`;
 
         pool.query(query, (error, results) => {
           if (error) {
