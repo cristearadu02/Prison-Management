@@ -275,7 +275,7 @@ main {
 }
 
 
-.delete-button, .admin-button {
+.delete-button, .admin-button, .download-button {
   font-family: 'Oswald', sans-serif;
   display: inline-block;
   padding: 5px 10px;
@@ -293,7 +293,7 @@ main {
   background-color: #ff0000; 
 }
 
-.admin-button:hover {
+.admin-button:hover, .download-button:hover {
   color: #333;
   background-color: #00ff37; 
 }

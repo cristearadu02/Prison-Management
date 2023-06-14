@@ -1,4 +1,3 @@
-
 const crypto = require('crypto');
 
 const validateData = (data, pool) => {
@@ -72,7 +71,6 @@ const validateData = (data, pool) => {
     });
   };
 
-
   const validateCNP = (cnp,name, pool) => {
     return new Promise((resolve, reject) => {
       const errors = [];
@@ -100,9 +98,6 @@ const validateData = (data, pool) => {
       });
     });
   };
-  
-
-
 
 
   function findUserByCNP(cnp, password, pool) {
@@ -122,6 +117,21 @@ const validateData = (data, pool) => {
       });
   }
 
+  function findUserByID(id, password, pool) {
+    return new Promise((resolve, reject) => {
+      pool.query('SELECT * FROM vizitatori WHERE id = ?', [id], (error, results) => {
+        if (error) {
+          reject(error);
+        } else if (results.length > 0 && results[0].parola === hashPassword(password)) {
+          // User found and password matches
+          resolve(results[0].id); // assuming `id` is the column name for user id
+        } else {
+          // No user found, or password did not match
+          resolve(null);
+        }
+      });
+    });
+}
 
   function hashPassword(password) {
     const hash = crypto.createHash('sha256');
@@ -130,6 +140,4 @@ const validateData = (data, pool) => {
   }
   
 
-
-
-  module.exports = {validateData, findUserByCNP, hashPassword , validateCNP};
+  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP};

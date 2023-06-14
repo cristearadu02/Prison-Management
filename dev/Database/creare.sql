@@ -39,9 +39,11 @@ CREATE TABLE Detinuti (
   id INT AUTO_INCREMENT PRIMARY KEY,
   nume VARCHAR(255),
   prenume VARCHAR(255),
-  cnp VARCHAR(15) unique,
+  cnp VARCHAR(15) UNIQUE,
   motivul_detinerii TEXT,
-  gradul INT
+  gradul INT,
+  data_inceperii_sentintei DATE,
+  data_sfarsirii_sentintei DATE
 );
 
 

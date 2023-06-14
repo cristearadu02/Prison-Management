@@ -7,9 +7,7 @@ const changeInfoButton = document.querySelector('.change-info');
 const changePasswordLink = document.querySelector('.change-password');
 
 var userId;
-var cnp;
 var userRole;
-var data;
 
 var jwt = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 console.log(jwt);
@@ -68,6 +66,12 @@ function fetchUserInfo() {
             roleInfo.textContent = 'Vizitator';
             const visitsAdmin = document.getElementById('visitorsAdmin');
             visitsAdmin.style.display = 'none';
+            const v1 = document.getElementById('visitors1');
+            v1.style.display = 'none';
+            const v2 = document.getElementById('visitors2');
+            v2.style.display = 'none';
+            const deteinee = document.getElementById('detainee');
+            deteinee.style.display = 'none';
        }
       userRole = rol;
       
@@ -82,60 +86,65 @@ function fetchUserInfo() {
 
 // Fetch visit information for the logged user and update the visits list
 function fetchVisitsInfo() {
-  if (userRole === 'user') {
-  let cnp =  cnpInfo.textContent;
-    if (!cnp) {
-      console.error('CNP is missing');
-      return;
+
+  if(userRole == 'user'){
+
+  fetch('http://localhost:3000/api/getVisitsByIDVizitator', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
     }
-    const url = `http://localhost:3000/api/getVisitsByIDVizitator?cnp=${cnp}`;
+}).then(response => response.json())
+    .then(data => {
+      // Update visitsData array with the fetched data
+      const visitsData = data.map(visit => ({
+        date: visit.data_vizitei,
+        name: visit.nume_detinut,
+        reason: visit.motiv_vizita,
+        otherInfo: `Relatia: ${visit.relatia} <br> 
+                    Natura: ${visit.natura_vizitei} <br>  
+                    Obiecte aduse: ${visit.obiecte_de_livrat || 'Niciunul'} <br>
+                    Martori: ${visit.nume_martor ? `${visit.nume_martor} ${visit.prenume_martor}` : 'Niciunul'}`
+      }));
 
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        // Update visitsData array with the fetched data
-        const visitsData = data.map(visit => ({
-          date: visit.data_vizitei,
-          name: visit.nume_detinut,
-          reason: visit.motiv_vizita,
-          otherInfo: `Relatia: ${visit.relatia} <br> 
-                      Natura: ${visit.natura_vizitei} <br>  
-                      Obiecte aduse: ${visit.obiecte_de_livrat || 'Niciunul'} <br>
-                      Martori: ${visit.nume_martor ? `${visit.nume_martor} ${visit.prenume_martor}` : 'Niciunul'}`
-        }));
+      renderVisits(visitsData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle any errors that occurred during the fetch request
+    });
+  }
+  else{
+  fetch('http://localhost:3000/api/getVisitsAsAdmin', {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
+    .then(data => {
+      // Update visitsData array with the fetched data
+      // data will contain motiv_vizita, dataa, nume AS detainee_name, nume AS visitor_name,
+      // relatia, natura, obiecte_aduse, martori
+      const visitsData = data.map(visit => ({
+        date: visit.data_vizitei,
+        name: visit.nume_detinut + " " + visit.prenume_detinut,
+        reason: visit.natura_vizitei + ", " + visit.relatia,
+        otherInfo: `Vizitator: ${visit.nume} ${visit.prenume} <br>
+                    Relatia: ${visit.relatia} <br>
+                    Obiecte aduse: ${visit.obiecte_de_livrat} <br>
+                    Martori: ${visit.nume_martor || 'Niciunul'}`
+      }));
+      renderVisits(visitsData);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      // Handle any errors that occurred during the fetch request
+    });
 
-        renderVisits(visitsData);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Handle any errors that occurred during the fetch request
-      });
-  } else {
-    const url = `http://localhost:3000/api/getVisitsAsAdmin`;
-
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        // Update visitsData array with the fetched data
-        const visitsData = data.map(visit => ({
-          date: visit.data_vizitei,
-          name: `${visit.nume} ${visit.prenume}`,
-          detaineeName: `${visit.nume_detinut} ${visit.prenume_detinut}`,
-          relationship: visit.relatia,
-          visitNature: visit.natura_vizitei,
-          objectsDelivered: visit.obiecte_de_livrat || 'Niciunul',
-          witness: visit.nume_martor ? `${visit.nume_martor} ${visit.prenume_martor}` : 'Niciunul'
-        }));
-
-        renderVisits(visitsData);
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        // Handle any errors that occurred during the fetch request
-      });
   }
 }
-
 
 function fetchVisitorsInfo() {
   const url = `http://localhost:3000/api/getUsersAsAdmin`;
@@ -172,17 +181,22 @@ function updateUserInfo() {
   const email = encodeURIComponent(emailInput.value);
   const phone = encodeURIComponent(phoneInput.value);
 
-  const url = `http://localhost:3000/api/updateUserInfo?id=${userId}&email=${email}&phone=${phone}`;
+  const url = `http://localhost:3000/api/updateUserInfo?email=${email}&phone=${phone}`;
 
-  fetch(url, { method: 'POST' })
-    .then(response => response.json())
-    .then(data => {
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
+  .then(data => {
       console.log(data.message); // Log the response message
       //add a popup with the message
       alert(data.message);
     })
     .catch(error => {
-      console.error('Error:', error);
+      console.log('Error:', error);
       alert('Error updating user info!');
     });
 }
@@ -216,7 +230,143 @@ function renderVisits(visitsData) {
     li.appendChild(visitInfo);
     visitsList.appendChild(li);
   });
+  //here add three buttons for download as JSON, CSV and HTMLm for which i will want also some styling
+  const downloadJSON = document.createElement('button');
+  downloadJSON.textContent = 'Descarca ca JSON';
+  downloadJSON.classList.add('download-button');
+
+  downloadJSON.addEventListener('click', () => {
+    downloadFile(visitsData, 'json');
+  }
+  );
+  visitsList.appendChild(downloadJSON);
+
+  const downloadCSV = document.createElement('button');
+  downloadCSV.textContent = 'Descarca ca CSV';
+  downloadCSV.classList.add('download-button');
+
+  downloadCSV.addEventListener('click', () => {
+    downloadFile(visitsData, 'csv');
+  }
+  );
+  visitsList.appendChild(downloadCSV);
+
+  const downloadHTML = document.createElement('button');
+  downloadHTML.textContent = 'Descarca ca HTML';
+  downloadHTML.classList.add('download-button');
+
+  downloadHTML.addEventListener('click', () => {
+    downloadFile(visitsData, 'html');
+  }
+  );
+  visitsList.appendChild(downloadHTML);
+
 }
+
+//implement the download file function
+// function downloadFile(data, type) {
+//   let csvContent = "data:text/csv;charset=utf-8,";
+//   let htmlContent = "<table><tr><th>Data</th><th>Numele</th><th>Motivul</th><th>Alte informatii</th></tr>";
+//   let jsonContent = JSON.stringify(data);
+
+//   data.forEach(visit => {
+//     const date = new Date(visit.date).toLocaleDateString();
+//     const name = visit.name;
+//     const reason = visit.reason;
+//     const otherInfo = visit.otherInfo;
+//     if (type === 'csv') {
+//       csvContent += `${date},${name},${reason},${otherInfo}\r\n`;
+//     } else if (type === 'html') {
+//       htmlContent += `<tr><td>${date}</td><td>${name}</td><td>${reason}</td><td>${otherInfo}</td></tr>`;
+//     } else if (type === 'json') {
+//       jsonContent += `${date},${name},${reason},${otherInfo}\r\n`;
+//     }
+//   });
+
+//   if (type === 'csv') {
+//     const encodedUri = encodeURI(csvContent);
+//     const link = document.createElement("a");
+//     link.setAttribute("href", encodedUri);
+//     link.setAttribute("download", "visits.csv");
+//     document.body.appendChild(link); // Required for FF
+
+//     link.click(); // This will download the data file named "visits.csv".
+//   } else if (type === 'html') {
+//     htmlContent += "</table>";
+//     const encodedUri = encodeURI(htmlContent);
+//     const link = document.createElement("a");
+//     link.setAttribute("href", encodedUri);
+//     link.setAttribute("download", "visits.html");
+//     document.body.appendChild(link); // Required for FF
+
+//     link.click(); // This will download the data file named "visits.html".
+//   } else if (type === 'json') {
+//     const encodedUri = encodeURI(jsonContent);
+//     const link = document.createElement("a");
+//     link.setAttribute("href", encodedUri);
+//     link.setAttribute("download", "visits.json");
+//     document.body.appendChild(link); // Required for FF
+
+//     link.click(); // This will download the data file named "visits.json".
+//   }
+// }
+
+function downloadFile(data, format) {
+  let content, filename;
+  
+  if (format === 'json') {
+    content = JSON.stringify(data);
+    filename = 'visits.json';
+  } else if (format === 'csv') {
+    // Generate CSV content
+    const header = Object.keys(data[0]).join(',');
+    const rows = data.map(visit => Object.values(visit).join(','));
+    content = [header, ...rows].join('\n');
+    filename = 'visits.csv';
+  } else if (format === 'html') {
+    // Generate HTML content
+    const tableRows = data.map(visit => {
+      return `<tr>
+                <td>${visit.date}</td>
+                <td>${visit.name}</td>
+                <td>${visit.reason}</td>
+                <td>${visit.otherInfo}</td>
+              </tr>`;
+    });
+    content = `<table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Numele</th>
+                    <th>Motivul</th>
+                    <th>Alte Informații</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRows.join('')}
+                </tbody>
+              </table>`;
+    filename = 'visits.html';
+  } else {
+    console.error('Invalid format specified.');
+    return;
+  }
+
+  // Create a temporary anchor element to trigger the download
+  const element = document.createElement('a');
+  element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`);
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  // Trigger the download
+  element.click();
+
+  // Clean up
+  document.body.removeChild(element);
+}
+
+
 
 function renderVisitors(visitorsData) {
   visitorsList.innerHTML = '';
@@ -264,7 +414,13 @@ function renderVisitors(visitorsData) {
     //add the listener with delete method
     deleteButton.addEventListener('click', () => {
       const url = `http://localhost:3000/api/deleteUser?id=${visitorID}`;
-      fetch(url, { method: 'DELETE' })
+      fetch(url, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': jwt // The JWT already includes 'Bearer' prefix
+        }
+        })
         .then(response => response.json())
         .then(data => {
           console.log(data.message); // Log the response message
@@ -286,8 +442,14 @@ function renderVisitors(visitorsData) {
 
     makeAdminButton.addEventListener('click', () => {
       const url = `http://localhost:3000/api/makeAdmin?id=${visitorID}`;
-      fetch(url, { method: 'PUT' })
-        .then(response => response.json())
+      fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+    })
+    .then(response => response.json())
         .then(data => {
           console.log(data.message); // Log the response message
           //add a popup with the message
@@ -295,7 +457,7 @@ function renderVisitors(visitorsData) {
         })
         .catch(error => {
           console.error('Error:', error);
-          alert('Error making user admin!');
+          alert(error.message);
         });
     });
     visitorInfo.appendChild(makeAdminButton);
@@ -352,7 +514,6 @@ changePasswordLink.addEventListener('click', (event) => {
   passwordPopup.classList.toggle('hidden');
 });
 
-// ...existing code...
 
 // Submit password change
 function submitPasswordChange() {
@@ -370,10 +531,13 @@ function submitPasswordChange() {
   const currentPasswordEncoded = encodeURIComponent(currentPassword);
   const newPasswordEncoded = encodeURIComponent(newPassword);
 
-  const url = `http://localhost:3000/api/changePassword?id=${userId}&currentPassword=${currentPasswordEncoded}&newPassword=${newPasswordEncoded}`;
-
-  fetch(url, { method: 'POST' })
-    .then(response => {
+  fetch(`http://localhost:3000/api/changePassword?&currentPassword=${currentPasswordEncoded}&newPassword=${newPasswordEncoded}`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => {
       if (!response.ok) {
         throw new Error('Failed to change password');
       }
@@ -394,8 +558,8 @@ function submitPasswordChange() {
       alert(data.message);
     })
     .catch(error => {
-      console.error('Error:', error);
-      alert('Error changing password');
+      console.log('Error:', error);
+      alert('Parola curenta nu este corecta!');
     });
 }
 

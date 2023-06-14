@@ -14,16 +14,17 @@ VALUES
   ('Constantin', 'Mirela', '34567890123456', 'parola8', 'mirela.constantin@example.com', '4444444444', '1998-11-03', 'Romanian', 'Care este numele orasului in care te-ai nascut?', 'Bucuresti', 'user');
 
 -- Popularea tabelului Detinuti
-INSERT INTO Detinuti (nume, prenume, cnp, motivul_detinerii, gradul)
-VALUES
-  ('Popescu', 'Mihai', '11111111111111', 'Furt', 2),
-  ('Ionescu', 'Gabriel', '22222222222222', 'Omucidere', 4),
-  ('Dumitru', 'Andrei', '33333333333333', 'Trafic de droguri', 3),
-  ('Popa', 'Maria', '44444444444444', 'Furt', 1),
-  ('Georgescu', 'Cristian', '55555555555555', 'Viol', 2),
-  ('Stanescu', 'Alexandru', '66666666666666', 'Trafic de persoane', 4),
-  ('Radu', 'Elena', '77777777777777', 'Furt', 1),
-  ('Constantinescu', 'Marius', '88888888888888', 'Frauda', 3);
+INSERT INTO Detinuti (nume, prenume, cnp, motivul_detinerii, gradul, data_inceperii_sentintei, data_sfarsirii_sentintei) VALUES
+  ('John', 'Doe', '123456789012345', 'Burglary', 2, '2022-01-01', '2022-12-31'),
+  ('Jane', 'Smith', '987654321098765', 'Fraud', 1, '2023-03-15', '2024-03-14'),
+  ('Mike', 'Johnson', '567890123456789', 'Robbery', 4, '2022-06-10', '2023-06-10'),
+  ('Sarah', 'Davis', '654321098765432', 'Drug trafficking', 3, '2023-01-20', '2024-01-19'),
+  ('Robert', 'Brown', '345678901234567', 'Assault', 1, '2022-09-05', '2023-09-04'),
+  ('Emily', 'Wilson', '876543210987654', 'Embezzlement', 2, '2023-04-02', '2024-04-01'),
+  ('Michael', 'Taylor', '234567890123456', 'Forgery', 3, '2022-11-12', '2023-11-11'),
+  ('Jessica', 'Anderson', '765432109876543', 'Kidnapping', 2, '2023-07-25', '2024-07-24'),
+  ('William', 'Clark', '456789012345678', 'Arson', 2, '2022-02-28', '2023-02-27'),
+  ('Olivia', 'White', '543210987654321', 'Homicide', 4, '2023-10-17', '2024-10-16');
 
 -- Popularea tabelului Vizite
 INSERT INTO vizite (nume, prenume, cnp, nume_detinut, prenume_detinut, relatia, natura_vizitei, data_vizitei, obiecte_de_livrat, nume_martor, prenume_martor, relatia_detinut_martor)
