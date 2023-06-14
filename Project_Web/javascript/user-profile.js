@@ -228,7 +228,143 @@ function renderVisits(visitsData) {
     li.appendChild(visitInfo);
     visitsList.appendChild(li);
   });
+  //here add three buttons for download as JSON, CSV and HTMLm for which i will want also some styling
+  const downloadJSON = document.createElement('button');
+  downloadJSON.textContent = 'Descarca ca JSON';
+  downloadJSON.classList.add('download-button');
+
+  downloadJSON.addEventListener('click', () => {
+    downloadFile(visitsData, 'json');
+  }
+  );
+  visitsList.appendChild(downloadJSON);
+
+  const downloadCSV = document.createElement('button');
+  downloadCSV.textContent = 'Descarca ca CSV';
+  downloadCSV.classList.add('download-button');
+
+  downloadCSV.addEventListener('click', () => {
+    downloadFile(visitsData, 'csv');
+  }
+  );
+  visitsList.appendChild(downloadCSV);
+
+  const downloadHTML = document.createElement('button');
+  downloadHTML.textContent = 'Descarca ca HTML';
+  downloadHTML.classList.add('download-button');
+
+  downloadHTML.addEventListener('click', () => {
+    downloadFile(visitsData, 'html');
+  }
+  );
+  visitsList.appendChild(downloadHTML);
+
 }
+
+//implement the download file function
+// function downloadFile(data, type) {
+//   let csvContent = "data:text/csv;charset=utf-8,";
+//   let htmlContent = "<table><tr><th>Data</th><th>Numele</th><th>Motivul</th><th>Alte informatii</th></tr>";
+//   let jsonContent = JSON.stringify(data);
+
+//   data.forEach(visit => {
+//     const date = new Date(visit.date).toLocaleDateString();
+//     const name = visit.name;
+//     const reason = visit.reason;
+//     const otherInfo = visit.otherInfo;
+//     if (type === 'csv') {
+//       csvContent += `${date},${name},${reason},${otherInfo}\r\n`;
+//     } else if (type === 'html') {
+//       htmlContent += `<tr><td>${date}</td><td>${name}</td><td>${reason}</td><td>${otherInfo}</td></tr>`;
+//     } else if (type === 'json') {
+//       jsonContent += `${date},${name},${reason},${otherInfo}\r\n`;
+//     }
+//   });
+
+//   if (type === 'csv') {
+//     const encodedUri = encodeURI(csvContent);
+//     const link = document.createElement("a");
+//     link.setAttribute("href", encodedUri);
+//     link.setAttribute("download", "visits.csv");
+//     document.body.appendChild(link); // Required for FF
+
+//     link.click(); // This will download the data file named "visits.csv".
+//   } else if (type === 'html') {
+//     htmlContent += "</table>";
+//     const encodedUri = encodeURI(htmlContent);
+//     const link = document.createElement("a");
+//     link.setAttribute("href", encodedUri);
+//     link.setAttribute("download", "visits.html");
+//     document.body.appendChild(link); // Required for FF
+
+//     link.click(); // This will download the data file named "visits.html".
+//   } else if (type === 'json') {
+//     const encodedUri = encodeURI(jsonContent);
+//     const link = document.createElement("a");
+//     link.setAttribute("href", encodedUri);
+//     link.setAttribute("download", "visits.json");
+//     document.body.appendChild(link); // Required for FF
+
+//     link.click(); // This will download the data file named "visits.json".
+//   }
+// }
+
+function downloadFile(data, format) {
+  let content, filename;
+  
+  if (format === 'json') {
+    content = JSON.stringify(data);
+    filename = 'visits.json';
+  } else if (format === 'csv') {
+    // Generate CSV content
+    const header = Object.keys(data[0]).join(',');
+    const rows = data.map(visit => Object.values(visit).join(','));
+    content = [header, ...rows].join('\n');
+    filename = 'visits.csv';
+  } else if (format === 'html') {
+    // Generate HTML content
+    const tableRows = data.map(visit => {
+      return `<tr>
+                <td>${visit.date}</td>
+                <td>${visit.name}</td>
+                <td>${visit.reason}</td>
+                <td>${visit.otherInfo}</td>
+              </tr>`;
+    });
+    content = `<table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Numele</th>
+                    <th>Motivul</th>
+                    <th>Alte Informații</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${tableRows.join('')}
+                </tbody>
+              </table>`;
+    filename = 'visits.html';
+  } else {
+    console.error('Invalid format specified.');
+    return;
+  }
+
+  // Create a temporary anchor element to trigger the download
+  const element = document.createElement('a');
+  element.setAttribute('href', `data:text/plain;charset=utf-8,${encodeURIComponent(content)}`);
+  element.setAttribute('download', filename);
+  element.style.display = 'none';
+  document.body.appendChild(element);
+
+  // Trigger the download
+  element.click();
+
+  // Clean up
+  document.body.removeChild(element);
+}
+
+
 
 function renderVisitors(visitorsData) {
   visitorsList.innerHTML = '';
