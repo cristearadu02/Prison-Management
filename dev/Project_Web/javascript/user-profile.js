@@ -24,9 +24,14 @@ function fetchUserInfo() {
 }).then(response => response.json())
     .then(data => {
       // Extract the necessary information from the response
-      const { nume, prenume, cnp, email, telefon, rol } = data;
+      const { nume, prenume, cnp, email, telefon, rol, imagine } = data;
 
       // Update the profile name element
+
+      const profileImage = document.querySelector('.profile-img');
+      profileImage.src = "data:image/jpg;base64," + imagine;
+      profileImage.style.display = 'block';
+
       const profileName = document.getElementById('profileName');
       profileName.textContent = `${nume} ${prenume}`;
 

@@ -13,7 +13,7 @@ const { parse } = require('path');
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: '',
   database: 'projectweb',
 });
 
@@ -66,8 +66,9 @@ const server = http.createServer((req, res) => {
                 cetatenie,
                 intrebare_securitate,
                 raspuns_intrebare_securitate,
-                role
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user')
+                role,
+                image
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
             `;
             pool.query(
               query,
@@ -82,6 +83,7 @@ const server = http.createServer((req, res) => {
                 userInfo.cetatenie,
                 userInfo.intrebare_securitate,
                 userInfo.raspuns_intrebare_securitate,
+                userInfo.image
               ],
               (error, results) => {
                 if (error) {
@@ -89,9 +91,28 @@ const server = http.createServer((req, res) => {
                   res.statusCode = 500;
                   res.end(JSON.stringify({ message: 'Internal Server Error!' }));
                 } else {
-                  res.setHeader('Content-Type', 'application/json');
-                  res.statusCode = 201; // Created
-                  res.end(JSON.stringify({ message: 'User registered successfully' }));
+
+                  findUserByCNP(userInfo.cnp, userInfo.password, pool)
+                  .then(user => {
+                    if (user) {
+                      console.log(user);
+                      // User found, generate and send token
+                      const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+          
+                      res.writeHead(201, { 'Content-Type': 'application/json' });
+                      res.end(JSON.stringify({ token: `Bearer ${token}` }));
+                    } else {
+                      // User not found
+                      res.writeHead(401, { 'Content-Type': 'application/json' });
+                      res.end(JSON.stringify({ message: 'Not Registered!'}));
+                    }
+                  })
+                  .catch(error => {
+                    // Handle database error
+                    console.error(error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Internal server error.' }));
+                  });
                 }
               }
             );
@@ -118,11 +139,11 @@ const server = http.createServer((req, res) => {
       //console.log(cnp,password);
 
       findUserByCNP(cnp, password, pool)
-        .then(userId => {
-          if (userId) {
-            console.log(userId);
+        .then(user => {
+          if (user) {
+            console.log(user);
             // User found, generate and send token
-            const token = jwt.sign({ userId }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ token: `Bearer ${token}` }));
@@ -164,7 +185,7 @@ const server = http.createServer((req, res) => {
         const userId = decoded.userId;
 
         // Create a MySQL query
-        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role FROM vizitatori WHERE id = ${userId}`;
+        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image FROM vizitatori WHERE id = ${userId}`;
 
         // Execute the query
         pool.query(query, (error, results) => {
@@ -185,7 +206,8 @@ const server = http.createServer((req, res) => {
                 cnp: user.cnp,
                 email: user.email,
                 telefon: user.numar_telefon,
-                rol: user.role
+                rol: user.role,
+                imagine : Buffer.from(user.image).toString('base64')
               };
 
               // Set CORS headers

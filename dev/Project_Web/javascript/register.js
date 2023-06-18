@@ -1,3 +1,5 @@
+var image_to_send = null;
+
 function previewImage(event) {
   const reader = new FileReader();
   const imagePreview = document.getElementById('image-preview');
@@ -6,6 +8,7 @@ function previewImage(event) {
   reader.onload = function () {
     if (reader.readyState === 2) {
       imagePreview.src = reader.result;
+      image_to_send = reader.result;
       imagePreview.style.display = 'block';
     }
   }
@@ -27,10 +30,12 @@ function navigateToLink(path) {
 document.getElementById('register-form').addEventListener('submit', function(event) {
   // Prevent the form from submitting normally
   event.preventDefault();
+  const fileInput = document.getElementById('image-upload');
+
 
   // Create an object to hold the form data
   let formData = {
-    //image: document.getElementById('image-upload').value,
+    image: image_to_send,
     cnp: document.getElementById('cnp').value,
     nume: document.getElementById('family-name').value,
     prenume: document.getElementById('name').value,
@@ -58,18 +63,21 @@ document.getElementById('register-form').addEventListener('submit', function(eve
     // Here you can check the response status
     if (response.status === 201) {
       // If the user is created successfully, you can redirect here
-      window.location.href = "./IndexLogat.html";
     } else {
       // If there was an error, handle it here
       alert("Registration failed. An error occurred.");
-      console.error("Error during registration:", response.statusText);
+      throw new Error('Registration failed. Please check your credentials.');
     }
 
     return response.json();  // This will pass the JSON response to the next then()
   })
   .then(data => {
     // Handle the response data
-    console.log(data);
+    document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = `jwt=${data.token}; Secure; SameSite=Strict;`;
+    console.log(data.token);
+    window.location.href = "./user-profile.html";
+
   })
   .catch(error => {
     // Handle the error
