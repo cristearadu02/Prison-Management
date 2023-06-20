@@ -136,6 +136,25 @@
     transition: background-color 0.2s ease-in-out;
     border-radius: 10px; /* Add border-radius for rounded corners */
   }
+
+  .download-button {
+    font-family: 'Oswald', sans-serif;
+    display: inline-block;
+    padding: 5px 10px;
+    margin-right: 5px;
+    background-color: #30d5c8; 
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .download-button:hover {
+    color: #333;
+    background-color: #00ff37; 
+  }
+  
   
   .search-buttons button:hover {
     opacity: 0.8;
