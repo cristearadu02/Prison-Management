@@ -5,6 +5,7 @@ const visitorsList = document.querySelector('.visitors-list');
 const visitsList = document.querySelector('.visits-list');
 const changeInfoButton = document.querySelector('.change-info');
 const changePasswordLink = document.querySelector('.change-password');
+const delogareButton = document.querySelector('.delogare');
 
 var userId;
 var userRole;
@@ -15,6 +16,7 @@ fetchUserInfo();
 
 // Fetch user information and update the UI
 function fetchUserInfo() {
+
   fetch('http://localhost:3000/api/getInfoByID', {
     method: 'GET',
     headers: {
@@ -24,7 +26,11 @@ function fetchUserInfo() {
 }).then(response => response.json())
     .then(data => {
       // Extract the necessary information from the response
-      const { nume, prenume, cnp, email, telefon, rol } = data;
+      const { nume, prenume, cnp, email, telefon, rol, imagine } = data;
+
+      const profileImage = document.querySelector('.profile-img');
+      profileImage.src = "data:image/jpg;base64," + imagine;
+      profileImage.style.display = 'block';
 
       // Update the profile name element
       const profileName = document.getElementById('profileName');
@@ -70,7 +76,7 @@ function fetchUserInfo() {
             v1.style.display = 'none';
             const v2 = document.getElementById('visitors2');
             v2.style.display = 'none';
-            const deteinee = document.getElementById('detainee');
+            const deteinee = document.getElementById('deteinee');
             deteinee.style.display = 'none';
        }
       userRole = rol;
@@ -83,6 +89,7 @@ function fetchUserInfo() {
       // Handle any errors that occurred during the fetch request
     });
 }
+
 
 // Fetch visit information for the logged user and update the visits list
 function fetchVisitsInfo() {

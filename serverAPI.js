@@ -6,7 +6,7 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate } = require('./utilitary');
 const { parse } = require('path');
 
 // Create a MySQL connection pool
@@ -66,8 +66,9 @@ const server = http.createServer((req, res) => {
                 cetatenie,
                 intrebare_securitate,
                 raspuns_intrebare_securitate,
-                role
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user')
+                role,
+                image
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
             `;
             pool.query(
               query,
@@ -82,6 +83,7 @@ const server = http.createServer((req, res) => {
                 userInfo.cetatenie,
                 userInfo.intrebare_securitate,
                 userInfo.raspuns_intrebare_securitate,
+                userInfo.image
               ],
               (error, results) => {
                 if (error) {
@@ -89,9 +91,28 @@ const server = http.createServer((req, res) => {
                   res.statusCode = 500;
                   res.end(JSON.stringify({ message: 'Internal Server Error!' }));
                 } else {
-                  res.setHeader('Content-Type', 'application/json');
-                  res.statusCode = 201; // Created
-                  res.end(JSON.stringify({ message: 'User registered successfully' }));
+
+                  findUserByCNP(userInfo.cnp, userInfo.password, pool)
+                  .then(user => {
+                    if (user) {
+                      console.log(user);
+                      // User found, generate and send token
+                      const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+          
+                      res.writeHead(201, { 'Content-Type': 'application/json' });
+                      res.end(JSON.stringify({ token: `Bearer ${token}` }));
+                    } else {
+                      // User not found
+                      res.writeHead(401, { 'Content-Type': 'application/json' });
+                      res.end(JSON.stringify({ message: 'Not Registered!'}));
+                    }
+                  })
+                  .catch(error => {
+                    // Handle database error
+                    console.error(error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Internal server error.' }));
+                  });
                 }
               }
             );
@@ -118,11 +139,11 @@ const server = http.createServer((req, res) => {
       //console.log(cnp,password);
 
       findUserByCNP(cnp, password, pool)
-        .then(userId => {
-          if (userId) {
-            console.log(userId);
+        .then(user => {
+          if (user) {
+            console.log(user);
             // User found, generate and send token
-            const token = jwt.sign({ userId }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ token: `Bearer ${token}` }));
@@ -164,7 +185,7 @@ const server = http.createServer((req, res) => {
         const userId = decoded.userId;
 
         // Create a MySQL query
-        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role FROM vizitatori WHERE id = ${userId}`;
+        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image FROM vizitatori WHERE id = ${userId}`;
 
         // Execute the query
         pool.query(query, (error, results) => {
@@ -185,7 +206,8 @@ const server = http.createServer((req, res) => {
                 cnp: user.cnp,
                 email: user.email,
                 telefon: user.numar_telefon,
-                rol: user.role
+                rol: user.role,
+                imagine : Buffer.from(user.image).toString('base64')
               };
 
               // Set CORS headers
@@ -948,7 +970,240 @@ const server = http.createServer((req, res) => {
       res.statusCode = 400;
       res.end('Bad Request');
     }
+  } else if(parsedUrl.pathname === '/api/findDeteineeByName'){
+    const bearerToken = req.headers.authorization;
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        const nume = parsedUrl.query.nume;
+        const prenume = parsedUrl.query.prenume;
+
+        const query = `
+        SELECT d.nume, d.prenume, d.cnp, d.motivul_detinerii, d.gradul,d.data_inceperii_sentintei, d.data_sfarsirii_sentintei
+        FROM detinuti d
+        WHERE d.nume = '${nume}' and d.prenume <= '${prenume}'`;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+  } else if(parsedUrl.pathname === '/api/findDeteineeByCNP'){
+    const bearerToken = req.headers.authorization;
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        const cnp = parsedUrl.query.cnp;
+
+        const query = `
+        SELECT d.nume, d.prenume, d.cnp, d.motivul_detinerii, d.gradul,d.data_inceperii_sentintei, d.data_sfarsirii_sentintei
+        FROM detinuti d
+        WHERE d.cnp = '${cnp}'`;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+  }else if(parsedUrl.pathname === '/api/findDeteineeByGrad'){
+    const bearerToken = req.headers.authorization;
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        const gradul = parsedUrl.query.gradul;
+
+        const query = `
+        SELECT d.nume, d.prenume, d.cnp, d.motivul_detinerii, d.gradul,d.data_inceperii_sentintei, d.data_sfarsirii_sentintei
+        FROM detinuti d
+        WHERE d.gradul = '${gradul}'`;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+  }else if(parsedUrl.pathname === '/api/findAllDeteinee'){
+    const bearerToken = req.headers.authorization;
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+
+        const query = `
+        SELECT d.id,d.nume, d.prenume, d.cnp, d.motivul_detinerii, d.gradul,d.data_inceperii_sentintei, d.data_sfarsirii_sentintei
+        FROM detinuti d`;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+  } else if (parsedUrl.pathname === '/api/deleteInmate') {
+    if (req.method === 'OPTIONS') {
+      res.statusCode = 200;
+      res.setHeader('Access-Control-Allow-Origin', '*');
+      res.setHeader('Access-Control-Allow-Methods', 'DELETE');
+      res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+      res.end();
+    } else if (req.method === 'DELETE') {
+      console.log('delete inmate');
+      const bearerToken = req.headers.authorization;
+      const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+
+      jwt.verify(token, secretKey, (err, decoded) => {
+        if (err) {
+          console.error('Error verifying token:', err);
+          res.statusCode = 401;
+          res.end(JSON.stringify({ message: 'Unauthorized' }));
+        } else {
+          const inmateId = parsedUrl.query.id;
+          const query = `DELETE FROM detinuti WHERE id = ${inmateId}`;
+          pool.query(query, (error, results) => {
+            if (error) {
+              console.error('Error executing query:', error);
+              res.statusCode = 500;
+              res.end('Internal Server Error');
+            } else {
+              res.setHeader('Access-Control-Allow-Origin', '*');
+              res.setHeader('Access-Control-Allow-Methods', 'DELETE');
+              res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+              res.setHeader('Content-Type', 'application/json');
+              res.end(JSON.stringify({ message: 'User deleted successfully' }));
+            }
+          });
+        }
+      });
+    } else {
+      res.statusCode = 400;
+      res.end('Bad Request');
+    }
+  }else if (parsedUrl.pathname === '/api/addInmate' && req.method === "POST") {
+        let body = ' ';
+        req.on('data', chunk => {
+          body += chunk.toString(); // convert Buffer to string
+        });
+        req.on('end', () => {
+          const inmateInfo = JSON.parse(body);
+  
+          validateInmate(
+            inmateInfo.cnp,
+            inmateInfo.data_inceperii_sentintei,
+            inmateInfo.data_sfarsirii_sentintei,
+            inmateInfo.gradul,
+            pool
+          )
+            .then(errors => {
+              if (errors.length > 0) {
+                res.setHeader('Content-Type', 'application/json');
+                res.statusCode = 400; // Bad Request
+                res.end(JSON.stringify({ message: 'Validation failed', errors: errors }));
+                console.log(...errors);
+              } else {
+                const query = `
+                INSERT INTO detinuti (
+                  nume,
+                  prenume,
+                  cnp,
+                  motivul_detinerii,
+                  gradul,
+                  data_inceperii_sentintei,
+                  data_sfarsirii_sentintei
+                ) VALUES (?,?,?,?,?,?,?)`;
+                pool.query(
+                  query,
+                  [
+                    inmateInfo.nume,
+                    inmateInfo.prenume,
+                    inmateInfo.cnp,
+                    inmateInfo.motivul,
+                    inmateInfo.gradul,
+                    inmateInfo.data_inceperii_sentintei,
+                    inmateInfo.data_sfarsirii_sentintei,
+                  ],
+                  (error, results) => {
+                    if (error) {
+                      console.error('Error executing query: ', error);
+                      res.statusCode = 500;
+                      res.end(JSON.stringify({ message: 'Internal Server Error!' }));
+                    } else {
+                      res.setHeader('Content-Type', 'application/json');
+                      res.statusCode = 201; // Created
+                      res.end(JSON.stringify({ message: 'Inmate registered successfully' }));
+                    }
+                  }
+                );
+              }
+            })
+            .catch(error => {
+              console.error('Error during validation:', error);
+              res.statusCode = 500;
+              res.end(JSON.stringify({ message: 'Internal Server Error' }));
+            });
+        });
+    
   }
+  
+  
   else {
     res.statusCode = 404;
     res.end('Not found');

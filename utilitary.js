@@ -108,7 +108,7 @@ const validateData = (data, pool) => {
             reject(error);
           } else if (results.length > 0 && results[0].parola === hashPassword(password)) {
             // User found and password matches
-            resolve(results[0].id); // assuming `id` is the column name for user id
+            resolve({id: results[0].id, role: results[0].role});
           } else {
             // No user found, or password did not match
             resolve(null);
@@ -117,6 +117,46 @@ const validateData = (data, pool) => {
       });
   }
 
+
+  const validateInmate = (cnp, startDate, endDate, grade, pool) => {
+    return new Promise((resolve, reject) => {
+      const errors = [];
+  
+      // Validate CNP (should be unique and numeric)
+      if (!cnp || !/^\d{13}$/.test(cnp)) {
+        errors.push('Invalid CNP. The CNP should have exactly 13 digits.');
+      }
+  
+      // Check if CNP exists
+      pool.query(
+        'SELECT * FROM vizitatori WHERE cnp = ?',
+        [cnp],
+        (err, results) => {
+          if (err) {
+            reject(err);
+          }
+  
+          if (results && results.length > 0) {
+            errors.push('CNP exist.');
+          }
+  
+          // Check if endDate is not lesser than startDate
+          if (endDate < startDate) {
+            errors.push('End date cannot be lesser than start date.');
+          }
+  
+          // Check if grade is between 1 and 4 (inclusive)
+          if (grade < 1 || grade > 4) {
+            errors.push('Invalid grade. Grade should be between 1 and 4.');
+          }
+  
+          // Resolve the errors
+          resolve(errors);
+        }
+      );
+    });
+  };
+
   function findUserByID(id, password, pool) {
     return new Promise((resolve, reject) => {
       pool.query('SELECT * FROM vizitatori WHERE id = ?', [id], (error, results) => {
@@ -124,7 +164,7 @@ const validateData = (data, pool) => {
           reject(error);
         } else if (results.length > 0 && results[0].parola === hashPassword(password)) {
           // User found and password matches
-          resolve(results[0].id); // assuming `id` is the column name for user id
+          resolve({id: results[0].id, role: results[0].role});
         } else {
           // No user found, or password did not match
           resolve(null);
@@ -140,4 +180,4 @@ const validateData = (data, pool) => {
   }
   
 
-  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP};
+  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP, validateInmate};

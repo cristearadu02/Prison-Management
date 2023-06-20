@@ -185,6 +185,23 @@
     color: #333;
     background-color: #00ff37; 
   }
+  
+  #addInmateButton {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px; /* Optional: Adds some spacing between the search results and the button */
+  }
+  
+  .addInmate-button {
+    font-family: 'Oswald', sans-serif;
+    padding: 5px 10px;
+    background-color: #30d5c8; 
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
 
   .visits-list {
     width: 100%;
