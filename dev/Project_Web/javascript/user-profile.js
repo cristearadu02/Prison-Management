@@ -5,6 +5,7 @@ const visitorsList = document.querySelector('.visitors-list');
 const visitsList = document.querySelector('.visits-list');
 const changeInfoButton = document.querySelector('.change-info');
 const changePasswordLink = document.querySelector('.change-password');
+const delogareButton = document.querySelector('.delogare');
 
 var userId;
 var userRole;
@@ -15,6 +16,7 @@ fetchUserInfo();
 
 // Fetch user information and update the UI
 function fetchUserInfo() {
+
   fetch('http://localhost:3000/api/getInfoByID', {
     method: 'GET',
     headers: {
@@ -26,12 +28,11 @@ function fetchUserInfo() {
       // Extract the necessary information from the response
       const { nume, prenume, cnp, email, telefon, rol, imagine } = data;
 
-      // Update the profile name element
-
       const profileImage = document.querySelector('.profile-img');
       profileImage.src = "data:image/jpg;base64," + imagine;
       profileImage.style.display = 'block';
 
+      // Update the profile name element
       const profileName = document.getElementById('profileName');
       profileName.textContent = `${nume} ${prenume}`;
 
@@ -75,7 +76,7 @@ function fetchUserInfo() {
             v1.style.display = 'none';
             const v2 = document.getElementById('visitors2');
             v2.style.display = 'none';
-            const deteinee = document.getElementById('detainee');
+            const deteinee = document.getElementById('deteinee');
             deteinee.style.display = 'none';
        }
       userRole = rol;
@@ -88,6 +89,7 @@ function fetchUserInfo() {
       // Handle any errors that occurred during the fetch request
     });
 }
+
 
 // Fetch visit information for the logged user and update the visits list
 function fetchVisitsInfo() {
@@ -266,55 +268,72 @@ function renderVisits(visitsData) {
   );
   visitsList.appendChild(downloadHTML);
 
+  // here generate a diagram with the number of visits per month
+  const visitsPerMonth = document.createElement('button');
+  visitsPerMonth.textContent = 'Vizite pe luna';
+  visitsPerMonth.classList.add('download-button');
+
+  visitsPerMonth.addEventListener('click', () => {
+    // call generateDiagram function if it s not already called
+    if (!document.querySelector('canvas'))
+      generateDiagram(visitsData);
+      else
+      document.querySelector('canvas').remove();
+
+  }
+  );
+  visitsList.appendChild(visitsPerMonth);
+
 }
 
-//implement the download file function
-// function downloadFile(data, type) {
-//   let csvContent = "data:text/csv;charset=utf-8,";
-//   let htmlContent = "<table><tr><th>Data</th><th>Numele</th><th>Motivul</th><th>Alte informatii</th></tr>";
-//   let jsonContent = JSON.stringify(data);
+// implement generateDiagram function
+function generateDiagram(visitsData) {
+  // first, create an array with the months in english
+  const months = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'May', 'Iunie',
+    'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
 
-//   data.forEach(visit => {
-//     const date = new Date(visit.date).toLocaleDateString();
-//     const name = visit.name;
-//     const reason = visit.reason;
-//     const otherInfo = visit.otherInfo;
-//     if (type === 'csv') {
-//       csvContent += `${date},${name},${reason},${otherInfo}\r\n`;
-//     } else if (type === 'html') {
-//       htmlContent += `<tr><td>${date}</td><td>${name}</td><td>${reason}</td><td>${otherInfo}</td></tr>`;
-//     } else if (type === 'json') {
-//       jsonContent += `${date},${name},${reason},${otherInfo}\r\n`;
-//     }
-//   });
 
-//   if (type === 'csv') {
-//     const encodedUri = encodeURI(csvContent);
-//     const link = document.createElement("a");
-//     link.setAttribute("href", encodedUri);
-//     link.setAttribute("download", "visits.csv");
-//     document.body.appendChild(link); // Required for FF
+  // then, create an array with the number of visits per month
+  const visitsPerMonth = new Array(12).fill(0);
+  visitsData.forEach(visit => {
+    const month = new Date(visit.date).getMonth();
+    visitsPerMonth[month]++;
+  });
+  // then, create a canvas element and append it to the page
+  const canvas = document.createElement('canvas');
+  canvas.width = 400;
+  canvas.height = 200;
+  const ctx = canvas.getContext('2d');
+  document.body.appendChild(canvas);
+  // then, create a chart using Chart.js
+  const chart = new Chart(ctx, {
+    //type circle
+    //the types of charts are: bar, line, radar, doughnut, pie, polarArea, bubble, scatter, area
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Vizite pe luna',
+        data: visitsPerMonth,
+        color: 'black',
+        backgroundColor: '#d1e4e2',
+        borderColor: '#30d5c8',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+}
 
-//     link.click(); // This will download the data file named "visits.csv".
-//   } else if (type === 'html') {
-//     htmlContent += "</table>";
-//     const encodedUri = encodeURI(htmlContent);
-//     const link = document.createElement("a");
-//     link.setAttribute("href", encodedUri);
-//     link.setAttribute("download", "visits.html");
-//     document.body.appendChild(link); // Required for FF
-
-//     link.click(); // This will download the data file named "visits.html".
-//   } else if (type === 'json') {
-//     const encodedUri = encodeURI(jsonContent);
-//     const link = document.createElement("a");
-//     link.setAttribute("href", encodedUri);
-//     link.setAttribute("download", "visits.json");
-//     document.body.appendChild(link); // Required for FF
-
-//     link.click(); // This will download the data file named "visits.json".
-//   }
-// }
 
 function downloadFile(data, format) {
   let content, filename;

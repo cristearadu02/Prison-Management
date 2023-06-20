@@ -13,7 +13,7 @@ const { parse } = require('path');
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'root',
   database: 'projectweb',
 });
 
