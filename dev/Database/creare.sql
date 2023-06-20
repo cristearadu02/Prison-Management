@@ -1,6 +1,4 @@
-create database projectweb;
 use projectweb;
-
 
 -- Crearea tabelului Vizite
 CREATE TABLE vizite (
@@ -52,5 +50,36 @@ CREATE TABLE Detinuti (
 ALTER TABLE Vizitatori
 ADD role VARCHAR(255) DEFAULT 'user';
 
+ALTER TABLE Vizitatori
+ADD image BLOB;
 
 
+ALTER TABLE vizitatori
+MODIFY nume VARCHAR(255) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY prenume VARCHAR(255) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY cnp VARCHAR(15) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY parola VARCHAR(255) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY email VARCHAR(255) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY numar_telefon VARCHAR(20) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY data_nasterii DATE NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY cetatenie VARCHAR(255) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY intrebare_securitate VARCHAR(255) NOT NULL;
+
+ALTER TABLE vizitatori
+MODIFY raspuns_intrebare_securitate VARCHAR(255) NOT NULL;
