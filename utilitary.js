@@ -178,6 +178,25 @@ const validateData = (data, pool) => {
     hash.update(password);
     return hash.digest('hex');
   }
+
+  async function generateBlobFromBase64(base64Image) {
+    try {
+      const response = await fetch(base64Image);
+
+      const blob = await response.blob();
+      const commaIndex = base64Image.indexOf(',');
+      if (commaIndex !== -1) {
+        const type = base64Image.substring(0, commaIndex + 1);
+        return { blob, type };
+      } else {
+        throw new Error('Invalid base64 image format');
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  }
+  
   
 
-  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP, validateInmate};
+  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP, validateInmate, generateBlobFromBase64};

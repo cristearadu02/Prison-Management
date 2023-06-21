@@ -6,14 +6,14 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate, generateBlobFromBase64 } = require('./utilitary');
 const { parse } = require('path');
 
 // Create a MySQL connection pool
 const pool = mysql.createPool({
   host: 'localhost',
   user: 'root',
-  password: 'root',
+  password: '',
   database: 'projectweb',
 });
 
@@ -54,68 +54,80 @@ const server = http.createServer((req, res) => {
             console.log(...errors);
           } else {
             // create the query to insert the new user
-            const query = `
-              INSERT INTO vizitatori (
-                nume,
-                prenume,
-                cnp,
-                parola,
-                email,
-                numar_telefon,
-                data_nasterii,
-                cetatenie,
-                intrebare_securitate,
-                raspuns_intrebare_securitate,
-                role,
-                image
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
-            `;
-            pool.query(
-              query,
-              [
-                userInfo.nume,
-                userInfo.prenume,
-                userInfo.cnp,
-                hashPassword(userInfo.password),
-                userInfo.email,
-                userInfo.numar_telefon,
-                userInfo.data_nasterii,
-                userInfo.cetatenie,
-                userInfo.intrebare_securitate,
-                userInfo.raspuns_intrebare_securitate,
-                userInfo.image
-              ],
-              (error, results) => {
-                if (error) {
-                  console.error('Error executing query: ', error);
-                  res.statusCode = 500;
-                  res.end(JSON.stringify({ message: 'Internal Server Error!' }));
-                } else {
 
-                  findUserByCNP(userInfo.cnp, userInfo.password, pool)
-                  .then(user => {
-                    if (user) {
-                      console.log(user);
-                      // User found, generate and send token
-                      const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+            console.log(userInfo.image);
+
+
+            generateBlobFromBase64(userInfo.image)
+            .then(result => {
+              result.blob.arrayBuffer().then(buffer => {
+                const binaryData = Buffer.from(buffer);
+        
+                const query = `
+                  INSERT INTO vizitatori (
+                    nume,
+                    prenume,
+                    cnp,
+                    parola,
+                    email,
+                    numar_telefon,
+                    data_nasterii,
+                    cetatenie,
+                    intrebare_securitate,
+                    raspuns_intrebare_securitate,
+                    role,
+                    image,
+                    image_type
+                  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?, ?)
+                `;
+        
+                pool.query(query, [
+                  userInfo.nume,
+                  userInfo.prenume,
+                  userInfo.cnp,
+                  hashPassword(userInfo.password),
+                  userInfo.email,
+                  userInfo.numar_telefon,
+                  userInfo.data_nasterii,
+                  userInfo.cetatenie,
+                  userInfo.intrebare_securitate,
+                  userInfo.raspuns_intrebare_securitate,
+                  binaryData,
+                  result.type
+                ], (error, results) => {
+                  if (error) {
+                    console.error('Error executing query: ', error);
+                    res.statusCode = 500;
+                    res.end(JSON.stringify({ message: 'Internal Server Error!' }));
+                  } else {
+                    findUserByCNP(userInfo.cnp, userInfo.password, pool)
+                      .then(user => {
+                        if (user) {
+                          console.log(user);
+                          // User found, generate and send token
+                          const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
           
-                      res.writeHead(201, { 'Content-Type': 'application/json' });
-                      res.end(JSON.stringify({ token: `Bearer ${token}` }));
-                    } else {
-                      // User not found
-                      res.writeHead(401, { 'Content-Type': 'application/json' });
-                      res.end(JSON.stringify({ message: 'Not Registered!'}));
-                    }
-                  })
-                  .catch(error => {
-                    // Handle database error
-                    console.error(error);
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: 'Internal server error.' }));
-                  });
-                }
-              }
-            );
+                          res.writeHead(201, { 'Content-Type': 'application/json' });
+                          res.end(JSON.stringify({ token: `Bearer ${token}` }));
+                        } else {
+                          // User not found
+                          res.writeHead(401, { 'Content-Type': 'application/json' });
+                          res.end(JSON.stringify({ message: 'Not Registered!' }));
+                        }
+                      })
+                      .catch(error => {
+                        // Handle database error
+                        console.error(error);
+                        res.writeHead(500, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: 'Internal server error.' }));
+                      });
+                  }
+                });
+              });
+            })
+            .catch(error => {
+              console.log(error);
+            });
           }
         })
         .catch(error => {
@@ -185,7 +197,7 @@ const server = http.createServer((req, res) => {
         const userId = decoded.userId;
 
         // Create a MySQL query
-        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image FROM vizitatori WHERE id = ${userId}`;
+        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image, image_type FROM vizitatori WHERE id = ${userId}`;
 
         // Execute the query
         pool.query(query, (error, results) => {
@@ -207,7 +219,8 @@ const server = http.createServer((req, res) => {
                 email: user.email,
                 telefon: user.numar_telefon,
                 rol: user.role,
-                imagine : Buffer.from(user.image).toString('base64')
+                imagine : (user.image).toString('base64'),
+                tip_imagine : user.image_type
               };
 
               // Set CORS headers
