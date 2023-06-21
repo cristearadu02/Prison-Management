@@ -645,7 +645,47 @@ const server = http.createServer((req, res) => {
       }
     });
 
-  } else if (parsedUrl.pathname === '/api/findUserByNumePrenume') {
+  } else if(parsedUrl.pathname === '/api/findAllUsers'){
+    
+    const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
+    console.log(bearerToken);
+
+    // Remove 'Bearer ' prefix
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    console.log(token);
+
+    // Verify and decode the JWT
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+
+      } else {
+
+        const query = `SELECT id,nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role FROM vizitatori`;
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query: ', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          }
+          else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+
+  }
+  else if (parsedUrl.pathname === '/api/findUserByNumePrenume') {
     console.log(parsedUrl.query.nume + " " + parsedUrl.query.prenume);
     //get the name and surname from the query parameter and search for the user with that name and surname and return it
     const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
@@ -785,7 +825,9 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ message: 'Unauthorized' }));
         } else {
           const userId = parsedUrl.query.id;
-          const query = `UPDATE vizitatori SET role = 'admin' WHERE id = ${userId}`;
+          // if the user is admin make him user and if he is user make him admin
+          const query = `UPDATE vizitatori SET role = CASE WHEN role = 'user' THEN 'admin' ELSE 'user' END WHERE id = ${userId}`;
+          
           pool.query(query, (error, results) => {
             if (error) {
               console.error('Error executing query:', error);
@@ -796,7 +838,7 @@ const server = http.createServer((req, res) => {
               res.setHeader('Access-Control-Allow-Methods', 'PUT');
               res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ message: 'User is now admin' }));
+              res.end(JSON.stringify({ message: 'User role has changed' }));
             }
           });
         }
@@ -838,7 +880,38 @@ const server = http.createServer((req, res) => {
       }
     });
 
-  } else if (parsedUrl.pathname === '/api/findVisitsByDeteineeName') {
+  } else if (parsedUrl.pathname === '/api/findAllVisits') {
+
+    const bearerToken = req.headers.authorization;
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        const query = `
+        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status
+        FROM vizite v
+        `;
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+
+  }else if (parsedUrl.pathname === '/api/findVisitsByDeteineeName') {
     const bearerToken = req.headers.authorization;
     const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
 

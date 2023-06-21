@@ -11,31 +11,40 @@
     <header>
       <h1>Penitenciarul Iasi</h1>
       <nav>
-        <ul>
-          <li><a href="register.html">Creeare cont</a></li>
-          <li><a href="login.html">Conectare cont</a></li>
-          <li><a href="#Despre">Despre</a></li>
-          <li><a href="#Istoric">Istoric</a></li>
-          <li><a href="#Conducerea">Conducerea</a></li>
-          <li><a href="#harta">Locatie</a></li>
-          <li><a href="Ghid.html">Ghid</a></li>
-        </ul>
-      </nav>
+  <ul>
+    <li id="registerLink"><a href="register.html">Creeare cont</a></li>
+    <li id="loginLink"><a href="login.html">Conectare cont</a></li>
+    <li id="userProfileLink" style="display: none;"><a href="user-profile.html">Contul meu</a></li>
+    <li id="programareLink" style="display: none;"><a href="Programare.html">Programează o vizită</a></li>
+    <li><a href="#Despre">Despre</a></li>
+    <li><a href="#Istoric">Istoric</a></li>
+    <li><a href="#Conducerea">Conducerea</a></li>
+    <li><a href="#harta">Locație</a></li>
+    <li><a href="Ghid.html">Ghid</a></li>
+  </ul>
+</nav>
+
     </header>
     <main>
       <div class = "bigDiv">
 
             <div class="row" id="Despre">
               <p>Despre</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sit amet lorem sed dolor cursus facilisis vel eget libero. Sed semper tristique est, at finibus ex condimentum vitae.  Integer tempor dignissim risus.</p>
+              <p>Penitenciarul Iași este o instituție corecțională situată în orașul Iași, România. Penitenciarul își desfășoară activitatea conform normelor și reglementărilor în vigoare, cu scopul de a asigura reeducarea și reintegrarea socială a persoanelor private de libertate.
+
+                Cu o echipă de profesioniști dedicată, penitenciarul se străduiește să ofere un mediu sigur și securizat atât pentru deținuți, cât și pentru personalul angajat. Principalele obiective ale Penitenciarului Iași includ reeducarea și formarea deținuților prin intermediul programelor de învățare, pregătirea profesională și consilierea psihologică.</p>
             </div>
             <div class="row" id="Istoric">
               <p>Istoric</p>
-              <p>Lorem ipsum dolor sit amet, consectetur Fusce ut lorem sed orci placerat mattis eu non lectus. Vestibulum auctor sed sapien ac lacinia. Vivamus ac accumsan dolor. Donec ultrices elit a est dictum, vel pulvinar turpis consectetur. Curabitur porta ante hendrerit arcu tempus vestibulum eget eget arcu. Morbi orci leo, tempor sed porta sed, placerat in risus. Integer tempor dignissim risus.</p>
+              <p>Penitenciarul Iași are o istorie bogată și îndelungată în domeniul corecțional din România. Fondat în anul 1950, penitenciarul a fost construit ca o instituție dedicată pedepsei și reabilitării persoanelor condamnate.
+
+                De-a lungul anilor, Penitenciarul Iași și-a dezvoltat infrastructura și a evoluat în conformitate cu schimbările legislației și cerințelor sociale. Inițial, penitenciarul funcționa în clădiri vechi, însă ulterior a fost construit un complex modern, adaptat nevoilor actuale.</p>
             </div>
             <div class="row" id="Conducerea">
               <p>Conducerea</p>
-              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur sit amet lorem sed dolor cursus facilisis vel eget libero. Sed semper tristique est, at finibus ex condimentum vitae. Duis a nibh libero. Fusce ut lorem sed orci placerat mattis eu non lectus. Vestibulum auctor sed sapien ac lacinia. Vivamus ac accumsan dolor. Donec ultrices elit a est dictum, vel pulvinar turpis consectetur. Curabitur porta ante hendrerit arcu tempus vestibulum eget eget arcu. Morbi orci leo, tempor sed porta sed, placerat in risus. Integer tempor dignissim risus.</p>
+              <p>Avem plăcerea să vă întâmpinăm pe acest site web și să vă prezentăm instituția noastră. Ne bucurăm că ne oferiți oportunitatea de a vă informa despre activitățile noastre și despre eforturile noastre constante de reeducare și reintegrare socială a persoanelor private de libertate.
+
+                Scopul nostru principal este de a crea un mediu sigur și securizat în cadrul penitenciarului, dar și de a oferi oportunități de schimbare și dezvoltare pentru deținuți. Credem în importanța reabilitării și în posibilitatea de a-i ajuta pe cei care au greșit să se redreseze și să se reintegreze în societate.</p>
             </div>
             <div class="row" id="harta">
               <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2711.831877286519!2d27.556033815845485!3d47.18072817529227!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x40cafca7f32bd7c9%3A0xc63c3edf7a29e86!2sPenitenciarul%20Iasi%2C%20Strada%20Fagului%2C%20Ia%C8%99i%20707410!5e0!3m2!1sro!2sro!4v1679942512978!5m2!1sro!2sro" width="776" height="500" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
@@ -45,4 +54,27 @@
     </main>
     <button class="goUp" onclick="window.scrollTo({ top: 0, behavior: 'smooth' });">Go Up</button>
   </body>
+
+  <script>
+  // Verifică existența token-ului în cookie
+  var jwt = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+
+  if (jwt) {
+    // Utilizatorul este logat
+    // Ascunde link-ul de conectare și afișează link-urile pentru utilizatorul logat
+    document.getElementById('loginLink').style.display = 'none';
+    document.getElementById('registerLink').style.display = 'none';
+    document.getElementById('userProfileLink').style.display = 'block';
+    document.getElementById('programareLink').style.display = 'block';
+  } else {
+    // Utilizatorul nu este logat
+    // Ascunde link-urile pentru utilizatorul logat și afișează link-ul de conectare
+    document.getElementById('userProfileLink').style.display = 'none';
+    document.getElementById('programareLink').style.display = 'none';
+    document.getElementById('loginLink').style.display = 'block';
+    document.getElementById('registerLink').style.display = 'block';
+  }
+</script>
+
+
 </html>

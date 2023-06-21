@@ -8,8 +8,9 @@ document.getElementById('DataStartFinal').addEventListener('click', searchByDate
 document.getElementById('NumePrenumeDetinut').addEventListener('click', searchByDetinut);
 document.getElementById('NumePrenumeVizitator').addEventListener('click', searchByVizitator);
 document.getElementById('NotVerifiedVisits').addEventListener('click', searchByStatus);
-// Function to search by Nume Prenume
-// Function to search by Nume Prenume
+document.getElementById('AllVisits').addEventListener('click', searchAllVisits);
+
+
 function searchByDate() {
 
   const dataStart = searchInput.value.split(' ')[0];
@@ -17,23 +18,23 @@ function searchByDate() {
 
   const url = `http://localhost:3000/api/findVisitsByDate?dataStart=${dataStart}&dataEnd=${dataEnd}`;
 
-fetch(url, {
-  method: 'GET',
-  headers: {
-    'Content-Type': 'application/json',
-    'Authorization': jwt // The JWT already includes 'Bearer' prefix
-  }
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
   })
-  .then(response => response.json())
+    .then(response => response.json())
     .then(data => {
       searchResults.innerHTML = '';
 
       if (data.length > 0) {
-          //Display each visit's information in the searchResults container
-          data.forEach(visit => {
-              const visitElement = document.createElement('div');
-              visitElement.classList.add('user');
-              visitElement.innerHTML = `
+        //Display each visit's information in the searchResults container
+        data.forEach(visit => {
+          const visitElement = document.createElement('div');
+          visitElement.classList.add('user');
+          visitElement.innerHTML = `
                   <h3>Vizitator: ${visit.nume} ${visit.prenume}</h3>
                   <p>Detinut: ${visit.nume_detinut} ${visit.prenume_detinut}</p>
                   <p>Data: ${visit.data_vizitei}</p>
@@ -43,46 +44,206 @@ fetch(url, {
                   <p>Martori: ${visit.nume_martor} ${visit.prenume_martor}</p>
                   <p>Status: ${visit.status}</p>
                   `;
-              searchResults.appendChild(visitElement);
-          });
-           //here add three buttons for download as JSON, CSV and HTML
-            const downloadJSON = document.createElement('button');
-            downloadJSON.innerHTML = 'Download as JSON';
-            downloadJSON.classList.add('download-button');
-            downloadJSON.addEventListener('click', () => {
-                downloadFile(data, 'json');
-            });
-            searchResults.appendChild(downloadJSON);
+          searchResults.appendChild(visitElement);
+        });
+        //here add three buttons for download as JSON, CSV and HTML
+        const downloadJSON = document.createElement('button');
+        downloadJSON.innerHTML = 'Download as JSON';
+        downloadJSON.classList.add('download-button');
+        downloadJSON.addEventListener('click', () => {
+          downloadFile(data, 'json');
+        });
+        searchResults.appendChild(downloadJSON);
 
-            const downloadCSV = document.createElement('button');
-            downloadCSV.innerHTML = 'Download as CSV';
-            downloadCSV.classList.add('download-button');
-            downloadCSV.addEventListener('click', () => {
-              downloadFile(data, 'csv');
-            });
-            searchResults.appendChild(downloadCSV);
+        const downloadCSV = document.createElement('button');
+        downloadCSV.innerHTML = 'Download as CSV';
+        downloadCSV.classList.add('download-button');
+        downloadCSV.addEventListener('click', () => {
+          downloadFile(data, 'csv');
+        });
+        searchResults.appendChild(downloadCSV);
 
-            const downloadHTML = document.createElement('button');
-            downloadHTML.innerHTML = 'Download as HTML';
-            downloadHTML.classList.add('download-button');
-            downloadHTML.addEventListener('click', () => {
-              downloadFile(data, 'html');
-            });
-            searchResults.appendChild(downloadHTML);
-            
+        const downloadHTML = document.createElement('button');
+        downloadHTML.innerHTML = 'Download as HTML';
+        downloadHTML.classList.add('download-button');
+        downloadHTML.addEventListener('click', () => {
+          downloadFile(data, 'html');
+        });
+        searchResults.appendChild(downloadHTML);
+
+        const visitsPerMonth = document.createElement('button');
+        visitsPerMonth.textContent = 'Vizite pe luna';
+        visitsPerMonth.classList.add('download-button');
+
+        visitsPerMonth.addEventListener('click', () => {
+          // call generateDiagram function if it s not already called
+          if (!document.querySelector('canvas'))
+            generateDiagram(data);
+          else
+            document.querySelector('canvas').remove();
+
+        }
+        );
+        searchResults.appendChild(visitsPerMonth);
+
+
+
       } else {
-          const visitElement = document.createElement('div');
-          visitElement.classList.add('user');
-          visitElement.innerHTML = `
+        const visitElement = document.createElement('div');
+        visitElement.classList.add('user');
+        visitElement.innerHTML = `
               <h3>No visits found</h3>
               `;
-          searchResults.appendChild(visitElement);
-      }     
+        searchResults.appendChild(visitElement);
+      }
     })
     .catch(error => {
       console.error('Error searching visits:', error);
     });
-  }
+
+
+
+}
+
+function searchAllVisits() {
+
+
+  const url = `http://localhost:3000/api/findAllVisits`;
+
+  fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+  })
+    .then(response => response.json())
+    .then(data => {
+      searchResults.innerHTML = '';
+
+      if (data.length > 0) {
+        //Display each visit's information in the searchResults container
+        data.forEach(visit => {
+          const visitElement = document.createElement('div');
+          visitElement.classList.add('user');
+          visitElement.innerHTML = `
+                  <h3>Vizitator: ${visit.nume} ${visit.prenume}</h3>
+                  <p>Detinut: ${visit.nume_detinut} ${visit.prenume_detinut}</p>
+                  <p>Data: ${visit.data_vizitei}</p>
+                  <p>Natura vizitei: ${visit.natura_vizitei}</p>
+                  <p>Relatia: ${visit.relatia}</p>
+                  <p>Obiecte de la vizitator: ${visit.obiecte_de_livrat}</p>
+                  <p>Martori: ${visit.nume_martor} ${visit.prenume_martor}</p>
+                  <p>Status: ${visit.status}</p>
+                  `;
+          searchResults.appendChild(visitElement);
+        });
+        //here add three buttons for download as JSON, CSV and HTML
+        const downloadJSON = document.createElement('button');
+        downloadJSON.innerHTML = 'Download as JSON';
+        downloadJSON.classList.add('download-button');
+        downloadJSON.addEventListener('click', () => {
+          downloadFile(data, 'json');
+        });
+        searchResults.appendChild(downloadJSON);
+
+        const downloadCSV = document.createElement('button');
+        downloadCSV.innerHTML = 'Download as CSV';
+        downloadCSV.classList.add('download-button');
+        downloadCSV.addEventListener('click', () => {
+          downloadFile(data, 'csv');
+        });
+        searchResults.appendChild(downloadCSV);
+
+        const downloadHTML = document.createElement('button');
+        downloadHTML.innerHTML = 'Download as HTML';
+        downloadHTML.classList.add('download-button');
+        downloadHTML.addEventListener('click', () => {
+          downloadFile(data, 'html');
+        });
+        searchResults.appendChild(downloadHTML);
+
+        const visitsPerMonth = document.createElement('button');
+        visitsPerMonth.textContent = 'Vizite pe luna';
+        visitsPerMonth.classList.add('download-button');
+
+        visitsPerMonth.addEventListener('click', () => {
+          // call generateDiagram function if it s not already called
+          if (!document.querySelector('canvas'))
+            generateDiagram(data);
+          else
+            document.querySelector('canvas').remove();
+
+        }
+        );
+        searchResults.appendChild(visitsPerMonth);
+
+
+
+      } else {
+        const visitElement = document.createElement('div');
+        visitElement.classList.add('user');
+        visitElement.innerHTML = `
+              <h3>No visits found</h3>
+              `;
+        searchResults.appendChild(visitElement);
+      }
+    })
+    .catch(error => {
+      console.error('Error searching visits:', error);
+    });
+
+
+
+}
+
+function generateDiagram(visitsData) {
+  // first, create an array with the months in english
+  const months = ['Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+    'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'];
+
+
+  // then, create an array with the number of visits per month
+  const visitsPerMonth = new Array(12).fill(0);
+  visitsData.forEach(visit => {
+    const month = new Date(visit.data_vizitei).getMonth();
+    visitsPerMonth[month]++;
+  });
+  // then, create a canvas element and append it to the page
+  const canvas = document.createElement('canvas');
+  canvas.width = 400;
+  canvas.height = 200;
+  const ctx = canvas.getContext('2d');
+  document.body.appendChild(canvas);
+  // then, create a chart using Chart.js
+  const chart = new Chart(ctx, {
+    //type circle
+    //the types of charts are: bar, line, radar, doughnut, pie, polarArea, bubble, scatter, area
+    type: 'bar',
+    data: {
+      labels: months,
+      datasets: [{
+        label: 'Vizite pe luna',
+        data: visitsPerMonth,
+        color: 'black',
+        backgroundColor: '#d1e4e2',
+        borderColor: '#30d5c8',
+        borderWidth: 1
+      }]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            stepSize: 1
+          }
+        }
+      }
+    }
+  });
+}
+
 
 // implement downloadFile function
 function downloadFile(data, type) {
@@ -123,10 +284,10 @@ function downloadFile(data, type) {
 
 // Function to search by CNP
 function searchByDetinut() {
-    const nume = searchInput.value.split(' ')[0];
-    const prenume = searchInput.value.split(' ')[1];
+  const nume = searchInput.value.split(' ')[0];
+  const prenume = searchInput.value.split(' ')[1];
 
-    const url = `http://localhost:3000/api/findVisitsByDeteineeName?nume=${nume}&prenume=${prenume}`;
+  const url = `http://localhost:3000/api/findVisitsByDeteineeName?nume=${nume}&prenume=${prenume}`;
 
   fetch(url, {
     method: 'GET',
@@ -134,17 +295,17 @@ function searchByDetinut() {
       'Content-Type': 'application/json',
       'Authorization': jwt // The JWT already includes 'Bearer' prefix
     }
-    })
+  })
     .then(response => response.json())
-      .then(data => {
-        searchResults.innerHTML = '';
+    .then(data => {
+      searchResults.innerHTML = '';
 
-        if (data.length > 0) {
-            //Display each visit's information in the searchResults container
-            data.forEach(visit => {
-                const visitElement = document.createElement('div');
-                visitElement.classList.add('user');
-                visitElement.innerHTML = `
+      if (data.length > 0) {
+        //Display each visit's information in the searchResults container
+        data.forEach(visit => {
+          const visitElement = document.createElement('div');
+          visitElement.classList.add('user');
+          visitElement.innerHTML = `
                     <h3>Vizitator: ${visit.nume} ${visit.prenume}</h3>
                     <p>Detinut: ${visit.nume_detinut} ${visit.prenume_detinut}</p>
                     <p>Data: ${visit.data_vizitei}</p>
@@ -154,54 +315,69 @@ function searchByDetinut() {
                     <p>Martori: ${visit.nume_martor} ${visit.prenume_martor}</p>
                     <p>Status: ${visit.status}</p>
                     `;
-                searchResults.appendChild(visitElement);
-            });
-            // Add download buttons
-            //here add three buttons for download as JSON, CSV and HTML
-            const downloadJSON = document.createElement('button');
-            downloadJSON.innerHTML = 'Download as JSON';
-            downloadJSON.classList.add('download-button');
-            downloadJSON.addEventListener('click', () => {
-                downloadFile(data, 'json');
-            });
-            searchResults.appendChild(downloadJSON);
+          searchResults.appendChild(visitElement);
+        });
+        // Add download buttons
+        //here add three buttons for download as JSON, CSV and HTML
+        const downloadJSON = document.createElement('button');
+        downloadJSON.innerHTML = 'Download as JSON';
+        downloadJSON.classList.add('download-button');
+        downloadJSON.addEventListener('click', () => {
+          downloadFile(data, 'json');
+        });
+        searchResults.appendChild(downloadJSON);
 
-            const downloadCSV = document.createElement('button');
-            downloadCSV.innerHTML = 'Download as CSV';
-            downloadCSV.classList.add('download-button');
-            downloadCSV.addEventListener('click', () => {
-              downloadFile(data, 'csv');
-            });
-            searchResults.appendChild(downloadCSV);
+        const downloadCSV = document.createElement('button');
+        downloadCSV.innerHTML = 'Download as CSV';
+        downloadCSV.classList.add('download-button');
+        downloadCSV.addEventListener('click', () => {
+          downloadFile(data, 'csv');
+        });
+        searchResults.appendChild(downloadCSV);
 
-            const downloadHTML = document.createElement('button');
-            downloadHTML.innerHTML = 'Download as HTML';
-            downloadHTML.classList.add('download-button');
-            downloadHTML.addEventListener('click', () => {
-              downloadFile(data, 'html');
-            });
-            searchResults.appendChild(downloadHTML);
+        const downloadHTML = document.createElement('button');
+        downloadHTML.innerHTML = 'Download as HTML';
+        downloadHTML.classList.add('download-button');
+        downloadHTML.addEventListener('click', () => {
+          downloadFile(data, 'html');
+        });
+        searchResults.appendChild(downloadHTML);
 
-        } else {
-            const visitElement = document.createElement('div');
-            visitElement.classList.add('user');
-            visitElement.innerHTML = `
+        const visitsPerMonth = document.createElement('button');
+        visitsPerMonth.textContent = 'Vizite pe luna';
+        visitsPerMonth.classList.add('download-button');
+
+        visitsPerMonth.addEventListener('click', () => {
+          // call generateDiagram function if it s not already called
+          if (!document.querySelector('canvas'))
+            generateDiagram(data);
+          else
+            document.querySelector('canvas').remove();
+
+        }
+        );
+        searchResults.appendChild(visitsPerMonth);
+
+      } else {
+        const visitElement = document.createElement('div');
+        visitElement.classList.add('user');
+        visitElement.innerHTML = `
                 <h3>No visits found</h3>
                 `;
-            searchResults.appendChild(visitElement);
-        }     
-      })
-      .catch(error => {
-        console.error('Error searching visits:', error);
-      });
+        searchResults.appendChild(visitElement);
+      }
+    })
+    .catch(error => {
+      console.error('Error searching visits:', error);
+    });
 }
 
 // Function to search by Telefon
-function searchByVizitator() {  
-    const nume = searchInput.value.split(' ')[0];
-    const prenume = searchInput.value.split(' ')[1];
+function searchByVizitator() {
+  const nume = searchInput.value.split(' ')[0];
+  const prenume = searchInput.value.split(' ')[1];
 
-    const url = `http://localhost:3000/api/findVisitsByVisitorName?nume=${nume}&prenume=${prenume}`;
+  const url = `http://localhost:3000/api/findVisitsByVisitorName?nume=${nume}&prenume=${prenume}`;
 
   fetch(url, {
     method: 'GET',
@@ -209,17 +385,17 @@ function searchByVizitator() {
       'Content-Type': 'application/json',
       'Authorization': jwt // The JWT already includes 'Bearer' prefix
     }
-    })
+  })
     .then(response => response.json())
-      .then(data => {
-        searchResults.innerHTML = '';
+    .then(data => {
+      searchResults.innerHTML = '';
 
-        if (data.length > 0) {
-            //Display each visit's information in the searchResults container
-            data.forEach(visit => {
-                const visitElement = document.createElement('div');
-                visitElement.classList.add('user');
-                visitElement.innerHTML = `
+      if (data.length > 0) {
+        //Display each visit's information in the searchResults container
+        data.forEach(visit => {
+          const visitElement = document.createElement('div');
+          visitElement.classList.add('user');
+          visitElement.innerHTML = `
                     <h3>Vizitator: ${visit.nume} ${visit.prenume}</h3>
                     <p>Detinut: ${visit.nume_detinut} ${visit.prenume_detinut}</p>
                     <p>Data: ${visit.data_vizitei}</p>
@@ -229,48 +405,62 @@ function searchByVizitator() {
                     <p>Martori: ${visit.nume_martor} ${visit.prenume_martor}</p>
                     <p>Status: ${visit.status}</p>
                     `;
-                searchResults.appendChild(visitElement);
-            });
-            //here add three buttons for download as JSON, CSV and HTML
-            const downloadJSON = document.createElement('button');
-            downloadJSON.innerHTML = 'Download as JSON';
-            downloadJSON.classList.add('download-button');
-            downloadJSON.addEventListener('click', () => {
-                downloadFile(data, 'json');
-            });
-            searchResults.appendChild(downloadJSON);
+          searchResults.appendChild(visitElement);
+        });
+        //here add three buttons for download as JSON, CSV and HTML
+        const downloadJSON = document.createElement('button');
+        downloadJSON.innerHTML = 'Download as JSON';
+        downloadJSON.classList.add('download-button');
+        downloadJSON.addEventListener('click', () => {
+          downloadFile(data, 'json');
+        });
+        searchResults.appendChild(downloadJSON);
 
-            const downloadCSV = document.createElement('button');
-            downloadCSV.innerHTML = 'Download as CSV';
-            downloadCSV.classList.add('download-button');
-            downloadCSV.addEventListener('click', () => {
-              downloadFile(data, 'csv');
-            });
-            searchResults.appendChild(downloadCSV);
+        const downloadCSV = document.createElement('button');
+        downloadCSV.innerHTML = 'Download as CSV';
+        downloadCSV.classList.add('download-button');
+        downloadCSV.addEventListener('click', () => {
+          downloadFile(data, 'csv');
+        });
+        searchResults.appendChild(downloadCSV);
 
-            const downloadHTML = document.createElement('button');
-            downloadHTML.innerHTML = 'Download as HTML';
-            downloadHTML.classList.add('download-button');
-            downloadHTML.addEventListener('click', () => {
-              downloadFile(data, 'html');
-            });
-            searchResults.appendChild(downloadHTML);
-        } else {
-            const visitElement = document.createElement('div');
-            visitElement.classList.add('user');
-            visitElement.innerHTML = `
+        const downloadHTML = document.createElement('button');
+        downloadHTML.innerHTML = 'Download as HTML';
+        downloadHTML.classList.add('download-button');
+        downloadHTML.addEventListener('click', () => {
+          downloadFile(data, 'html');
+        });
+        searchResults.appendChild(downloadHTML);
+
+        const visitsPerMonth = document.createElement('button');
+        visitsPerMonth.textContent = 'Vizite pe luna';
+        visitsPerMonth.classList.add('download-button');
+
+        visitsPerMonth.addEventListener('click', () => {
+          // call generateDiagram function if it s not already called
+          if (!document.querySelector('canvas'))
+            generateDiagram(data);
+          else
+            document.querySelector('canvas').remove();
+
+        }
+        );
+        searchResults.appendChild(visitsPerMonth);
+      } else {
+        const visitElement = document.createElement('div');
+        visitElement.classList.add('user');
+        visitElement.innerHTML = `
                 <h3>No visits found</h3>
                 `;
-            searchResults.appendChild(visitElement);
-        }     
-      })
-      .catch(error => {
-        console.error('Error searching visits:', error);
-      });
+        searchResults.appendChild(visitElement);
+      }
+    })
+    .catch(error => {
+      console.error('Error searching visits:', error);
+    });
 }
 
-function searchByStatus()
-{
+function searchByStatus() {
   const url = `http://localhost:3000/api/getNotVerifiedVisitsAsAdmin`;
 
   fetch(url, {
@@ -279,17 +469,17 @@ function searchByStatus()
       'Content-Type': 'application/json',
       'Authorization': jwt // The JWT already includes 'Bearer' prefix
     }
-    })
+  })
     .then(response => response.json())
-      .then(data => {
-        searchResults.innerHTML = '';
+    .then(data => {
+      searchResults.innerHTML = '';
 
-        if (data.length > 0) {
-            //Display each visit's information in the searchResults container
-            data.forEach(visit => {
-                const visitElement = document.createElement('div');
-                visitElement.classList.add('user');
-                visitElement.innerHTML = `
+      if (data.length > 0) {
+        //Display each visit's information in the searchResults container
+        data.forEach(visit => {
+          const visitElement = document.createElement('div');
+          visitElement.classList.add('user');
+          visitElement.innerHTML = `
                     <h3>Vizitator: ${visit.nume} ${visit.prenume}</h3>
                     <p>Detinut: ${visit.nume_detinut} ${visit.prenume_detinut}</p>
                     <p>Data: ${visit.data_vizitei}</p>
@@ -300,102 +490,117 @@ function searchByStatus()
                     <p>Status: ${visit.status}</p>
                     `;
 
-                const verifyButton = document.createElement('button');
-                verifyButton.classList.add('verifyButton');
-                verifyButton.innerHTML = 'Verify';
-                verifyButton.addEventListener('click', () => {
+          const verifyButton = document.createElement('button');
+          verifyButton.classList.add('verifyButton');
+          verifyButton.innerHTML = 'Verify';
+          verifyButton.addEventListener('click', () => {
 
-                    // Send a request to the server to verify the visit
-                    const url = `http://localhost:3000/api/changeVisitStatus?id=${visit.id}`;
+            // Send a request to the server to verify the visit
+            const url = `http://localhost:3000/api/changeVisitStatus?id=${visit.id}`;
 
-                    fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': jwt // The JWT already includes 'Bearer' prefix
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Visit verified:', data);
-                        alert('Visit verified!');
-                        window.location.reload();
-                    }
-                    )
-                    .catch(error => {
-                        console.error('Error verifying visit:', error);
-                    }
-                    );
-                });
-            
-                const rejectButton = document.createElement('button');
-                rejectButton.classList.add('rejectButton');
-                rejectButton.innerHTML = 'Reject';
-                rejectButton.addEventListener('click', () => {
+            fetch(url, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': jwt // The JWT already includes 'Bearer' prefix
+              }
+            })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Visit verified:', data);
+                alert('Visit verified!');
+                window.location.reload();
+              }
+              )
+              .catch(error => {
+                console.error('Error verifying visit:', error);
+              }
+              );
+          });
 
-                    // Send a request to the server to verify the visit 
+          const rejectButton = document.createElement('button');
+          rejectButton.classList.add('rejectButton');
+          rejectButton.innerHTML = 'Reject';
+          rejectButton.addEventListener('click', () => {
 
-                    const url = `http://localhost:3000/api/changeVisitStatusRejected?id=${visit.id}`;
+            // Send a request to the server to verify the visit 
 
-                    fetch(url, {
-                        method: 'PUT',
-                        headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': jwt // The JWT already includes 'Bearer' prefix
-                        }
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Visit rejected:', data);
-                        alert('Visit rejected!');
-                        window.location.reload();
-                    }
-                    )
-                    .catch(error => {
-                        console.error('Error rejecting visit:', error);
-                    }
-                    );
-                });
+            const url = `http://localhost:3000/api/changeVisitStatusRejected?id=${visit.id}`;
 
-                visitElement.appendChild(verifyButton);
-                visitElement.appendChild(rejectButton);
-                searchResults.appendChild(visitElement);
-            });
+            fetch(url, {
+              method: 'PUT',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': jwt // The JWT already includes 'Bearer' prefix
+              }
+            })
+              .then(response => response.json())
+              .then(data => {
+                console.log('Visit rejected:', data);
+                alert('Visit rejected!');
+                window.location.reload();
+              }
+              )
+              .catch(error => {
+                console.error('Error rejecting visit:', error);
+              }
+              );
+          });
 
-            //here add three buttons for download as JSON, CSV and HTML
-            const downloadJSON = document.createElement('button');
-            downloadJSON.innerHTML = 'Download as JSON';
-            downloadJSON.classList.add('download-button');
-            downloadJSON.addEventListener('click', () => {
-                downloadFile(data, 'json');
-            });
-            searchResults.appendChild(downloadJSON);
+          visitElement.appendChild(verifyButton);
+          visitElement.appendChild(rejectButton);
+          searchResults.appendChild(visitElement);
+        });
 
-            const downloadCSV = document.createElement('button');
-            downloadCSV.innerHTML = 'Download as CSV';
-            downloadCSV.classList.add('download-button');
-            downloadCSV.addEventListener('click', () => {
-              downloadFile(data, 'csv');
-            });
-            searchResults.appendChild(downloadCSV);
+        //here add three buttons for download as JSON, CSV and HTML
+        const downloadJSON = document.createElement('button');
+        downloadJSON.innerHTML = 'Download as JSON';
+        downloadJSON.classList.add('download-button');
+        downloadJSON.addEventListener('click', () => {
+          downloadFile(data, 'json');
+        });
+        searchResults.appendChild(downloadJSON);
 
-            const downloadHTML = document.createElement('button');
-            downloadHTML.innerHTML = 'Download as HTML';
-            downloadHTML.classList.add('download-button');
-            downloadHTML.addEventListener('click', () => {
-              downloadFile(data, 'html');
-            });
-            searchResults.appendChild(downloadHTML);
-        } else {
-            const visitElement = document.createElement('div');
-            visitElement.classList.add('user');
-            visitElement.innerHTML = `
+        const downloadCSV = document.createElement('button');
+        downloadCSV.innerHTML = 'Download as CSV';
+        downloadCSV.classList.add('download-button');
+        downloadCSV.addEventListener('click', () => {
+          downloadFile(data, 'csv');
+        });
+        searchResults.appendChild(downloadCSV);
+
+        const downloadHTML = document.createElement('button');
+        downloadHTML.innerHTML = 'Download as HTML';
+        downloadHTML.classList.add('download-button');
+        downloadHTML.addEventListener('click', () => {
+          downloadFile(data, 'html');
+        });
+        searchResults.appendChild(downloadHTML);
+
+        const visitsPerMonth = document.createElement('button');
+        visitsPerMonth.textContent = 'Vizite pe luna';
+        visitsPerMonth.classList.add('download-button');
+
+        visitsPerMonth.addEventListener('click', () => {
+          // call generateDiagram function if it s not already called
+          if (!document.querySelector('canvas'))
+            generateDiagram(data);
+          else
+            document.querySelector('canvas').remove();
+
+        }
+        );
+        searchResults.appendChild(visitsPerMonth);
+      } else {
+        const visitElement = document.createElement('div');
+        visitElement.classList.add('user');
+        visitElement.innerHTML = `
                 <h3>No visits found</h3>
                 `;
-            searchResults.appendChild(visitElement);
-        }     
-      })
-      .catch(error => {
-        console.error('Error searching visits:', error);
-      });
+        searchResults.appendChild(visitElement);
+      }
+    })
+    .catch(error => {
+      console.error('Error searching visits:', error);
+    });
 }

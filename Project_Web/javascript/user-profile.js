@@ -5,7 +5,18 @@ const visitorsList = document.querySelector('.visitors-list');
 const visitsList = document.querySelector('.visits-list');
 const changeInfoButton = document.querySelector('.change-info');
 const changePasswordLink = document.querySelector('.change-password');
-const delogareButton = document.querySelector('.delogare');
+
+//get the button with id delogare and add an event listener, delete the jwt cookie and redirect to Index.html page
+const delogare = document.getElementById('delogare');
+delogare.addEventListener('click', (event) => {
+  event.preventDefault();
+  document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+  window.location.href = "http://localhost:3005/Index.html";
+});
+
+
+
+
 
 var userId;
 var userRole;
@@ -428,6 +439,7 @@ function renderVisitors(visitorsData) {
 
     const visitorRol = document.createElement('p');
     visitorRol.textContent = `Rol: ${visitor.rol}`;
+    let isAdmin = visitor.rol;
     visitorInfo.appendChild(visitorRol);
 
 
@@ -436,54 +448,78 @@ function renderVisitors(visitorsData) {
     const deleteButton = document.createElement('button');
     deleteButton.textContent = 'Sterge utilizator';
     //add the listener with delete method
-    deleteButton.addEventListener('click', () => {
-      const url = `http://localhost:3000/api/deleteUser?id=${visitorID}`;
-      fetch(url, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': jwt // The JWT already includes 'Bearer' prefix
-        }
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log(data.message); // Log the response message
-          //add a popup with the message
-          alert(data.message);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Error deleting user!');
-        });
-    });
+    deleteButton.addEventListener("click", () => {
+            const url = `http://localhost:3000/api/deleteUser?id=${visitorID}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open("DELETE", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("Authorization", jwt);
+
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                console.log(response.message); // Log the response message
+                // Adăugați o notificare cu mesajul
+                alert(response.message);
+                // Eliminați elementul utilizatorului din DOM fără a reîncărca pagina
+                li.remove();
+              } else {
+                console.error("Error:", xhr.statusText);
+                alert("Error deleting user!");
+              }
+            };
+
+            xhr.onerror = function () {
+              console.error("Error:", xhr.statusText);
+              alert("Error deleting user!");
+            };
+
+            xhr.send();
+          });
     visitorInfo.appendChild(deleteButton);
 
     const makeAdminButton = document.createElement('button');
-    makeAdminButton.textContent = 'Promoveaza admin';
+    makeAdminButton.textContent = 'Schimba rolul';
 
     deleteButton.classList.add('delete-button');
     makeAdminButton.classList.add('admin-button');
 
-    makeAdminButton.addEventListener('click', () => {
-      const url = `http://localhost:3000/api/makeAdmin?id=${visitorID}`;
-      fetch(url, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': jwt // The JWT already includes 'Bearer' prefix
-    }
-    })
-    .then(response => response.json())
-        .then(data => {
-          console.log(data.message); // Log the response message
-          //add a popup with the message
-          alert(data.message);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert(error.message);
-        });
-    });
+    makeAdminButton.addEventListener("click", () => {
+            const url = `http://localhost:3000/api/makeAdmin?id=${visitorID}`;
+            const xhr = new XMLHttpRequest();
+            xhr.open("PUT", url, true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.setRequestHeader("Authorization", jwt);
+
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                const response = JSON.parse(xhr.responseText);
+                console.log(response.message); // Log the response message
+                // Adăugați o notificare cu mesajul
+                alert(response.message);
+                // Updatati rolul(admin) utilizatorului din DOM fără a reîncărca pagina
+                if(isAdmin === "admin"){
+                visitorRol.textContent = `Rol: user`;
+                
+                isAdmin = "user";
+              }
+                else{
+                  visitorRol.textContent = `Rol: admin`;
+                isAdmin = "admin";
+                }
+              } else {
+                console.error("Error:", xhr.statusText);
+                alert("Error making user admin!");
+              }
+            };
+
+            xhr.onerror = function () {
+              console.error("Error:", xhr.statusText);
+              alert("Error making user admin!");
+            };
+
+            xhr.send();
+          });
     visitorInfo.appendChild(makeAdminButton);
 
     li.appendChild(visitorInfo);
