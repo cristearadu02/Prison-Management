@@ -1,0 +1,348 @@
+$primary-color-green: #73A580;
+$primary-color-blue: #30D5C8;
+$primary-color-dark: #3E363F;
+
+$primary-font: 'Oswald', sans-serif;
+$secondary-font: Arial, Helvetica, sans-serif;
+
+
+
+@mixin center-element {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+  }
+
+
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Times New Roman', Times, serif;
+    background-color: #f3f3f3;
+    min-height: calc(100vh + 20px); 
+
+  }
+  
+  header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    background-color: $primary-color-green;
+    color: #ffffff;
+    position: relative;
+  }
+  
+  .logo {
+    cursor: pointer;
+    margin-left: 1%;
+    font-size: 30px;
+    font-family: 'Oswald', sans-serif;
+    font-weight: bold; 
+    width: fit-content;
+    flex-grow: 1;
+    transition: 0.3s;
+    &:hover {
+      font-size: 38px;       
+  }
+  }
+  
+  .profile {
+    position: relative;
+    transform: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    flex-grow: 0.4;
+  }
+
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+    object-fit: cover;
+  }
+  
+  .profile-name {
+    font-size: 18px;
+    font-style: italic;
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .dropdown {
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 250px;
+    padding: 15px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    text-align: left;
+
+    .info {
+      font-weight: bolder;
+      color: $primary-color-dark;
+      p{
+        display: flex;
+        font-weight: normal;
+        font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+        color: #666666;
+      }
+
+    }
+
+  }
+  
+  
+  .change-info,
+  .logout {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+  }
+  
+  .change-info {
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    background-color: #b30000;
+    color: #ffffff;
+    border: none;
+    border-radius: 3px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: #ff0000;
+    }
+
+  }
+  
+  .logout {
+    font-weight: bold;
+    background-color: transparent;
+    color: $primary-color-green;
+    border: 3px solid $primary-color-green;
+    border-radius: 3px;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: $primary-color-green;
+      color: #ffffff;
+    }
+  }
+  
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 100%;
+    min-height: calc(100vh - 110px); 
+    justify-content: center;
+  }
+
+
+  .content-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+  
+  .create-visit {
+    margin-right: 1%;
+    padding: 10px 20px;
+    font-size: 18px;
+    font-weight: bold;
+    font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    cursor: pointer;
+    background-color: #4b6584 ;
+    color: white;
+    border-style: solid;
+    border-color: #5c7aa3;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgb(9, 42, 70,0.5);
+    transition: 0.5s;
+
+
+    &:hover {
+      background-color: #6c89ac;
+    }
+  }
+  
+  .show-visits {
+
+    padding: 10px 20px;
+    font-size: 18px;
+    cursor: pointer;
+    background-color: $primary-color-green;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    transition: 0.3s;
+
+    &:hover {
+      background-color: #507c5c;
+    }
+  }
+  
+  .arrow {
+    margin-left: 5px;
+  }
+  
+  .visits-list {
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 20px;
+    list-style-type: none;
+    margin-top: 10px;
+
+    li {
+      padding: 10px;
+      border-bottom: 1px solid #e3e3e3;
+      display: flex;
+      justify-content: space-between;
+  
+        &:last-child {
+        border-bottom: none;
+      }
+  
+    }
+  }
+  
+
+  
+
+  
+  .visit-info {
+    display: flex;
+    flex-direction: column;
+
+    p {
+      margin: 0;
+    }
+  }
+  
+
+  
+  .hidden {
+    display: none;
+  }
+  
+  .go-top {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: $primary-color-green;
+    color: #ffffff;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+    display: none;
+
+    &:hover {
+      opacity: 1;
+      background-color: #507c5c;
+    }
+  }
+  
+
+  
+  @media (max-width: 767px) {
+    header {
+      flex-direction: column;
+    }
+    .logo,
+    .profile,
+    .create-visit {
+      width: 100%;
+      text-align: center;
+    }
+    .create-visit {
+      order: 2;
+      width: 40%;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 5%;
+    }
+    .profile {
+      order: 3;
+      margin-top: 5%;
+    }
+    .dropdown{
+      height: fit-content;
+      width: 200px;
+    }
+    .logo {
+      order: 1;
+      font-size: 25px;
+    }
+
+    .show-visits {
+      font-size: 15px;
+    }
+  }
+
+  
+  @media screen and (max-width: 350px) {
+
+    header {
+      flex-direction: column;
+    }
+    .logo,
+    .profile,
+    .create-visit {
+      width: 100%;
+      text-align: center;
+    }
+    .create-visit {
+      order: 2;
+      width: 50%;
+      font-size: 10px;
+      text-align: center;
+      margin-top: 10%;
+    }
+    .profile {
+      order: 3;
+    }
+    .logo {
+      order: 1;
+      font-size: 22px;
+    }
+
+    .dropdown{
+      height: fit-content;
+      width: 180px;
+    }
+
+    .show-visits {
+      font-size: 10px;
+    }
+
+
+  }
+
+
+
+  
