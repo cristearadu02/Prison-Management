@@ -4,6 +4,18 @@ const validateData = (data, pool) => {
     return new Promise((resolve, reject) => {
       const errors = [];
   
+      if (!data.image) {
+        errors.push('Profile image not atached');
+      }
+
+      if (!data.nume || !/^[a-zA-Z\s]{3,}$/.test(data.nume)) {
+        errors.push('Invalid family name. Name should have at least 5 characters and only include letters and spaces.');
+      }
+
+      if (!data.prenume || !/^[a-zA-Z\s]{3,}$/.test(data.prenume)) {
+        errors.push('Invalid name. Name should have at least 5 characters and only include letters and spaces.');
+      }
+
       // Validate email
       if (!data.email || !data.email.includes('@')) {
         errors.push('Invalid email.');
@@ -17,6 +29,18 @@ const validateData = (data, pool) => {
       if (!data.numar_telefon || !/^0\d{9}$/.test(data.numar_telefon)) {
         errors.push('Invalid phone number. Phone number must have exactly 10 digits and start with 0.');
       }
+
+      if (!data.address || data.address.length < 5) {
+        errors.push('Invalid address. Address should have at least 5 characters.');
+      }
+
+      if (!data.data_nasterii) {
+        errors.push('Invalid date of birth.');
+      }
+
+      if (!data.cetatenie) {
+        errors.push('Invalid citizenship.');
+      }
   
       // Validate password (length greater than 5)
       if (!data.password || data.password.length <= 5) {
@@ -26,6 +50,14 @@ const validateData = (data, pool) => {
       // Checks if password and confirm password are the same
       if (data.password !== data.confirmPassword) {
         errors.push('Password and Confirm Password should be the same');
+      }
+
+      if (!data.intrebare_securitate) {
+        errors.push('Invalid security question.');
+      }
+
+      if (!data.raspuns_intrebare_securitate || data.raspuns_intrebare_securitate.length < 5) {
+        errors.push('Invalid security answer. Answer should have at least 5 characters.');
       }
   
       if (!data.terms) {
@@ -70,6 +102,50 @@ const validateData = (data, pool) => {
       });
     });
   };
+
+
+
+
+  const validateDataForgotPassword = (data, pool) => {
+    return new Promise((resolve, reject) => {
+      const errors = [];
+  
+      if (!data.cnp || !/^\d{13}$/.test(data.cnp)) {
+        errors.push('Invalid CNP. The CNP should have exactly 13 digits.');
+      }
+      // Validate email
+      if (!data.email || !data.email.includes('@')) {
+        errors.push('Invalid email.');
+      }
+  
+      if (!data.securityQuestion) {
+        errors.push('Invalid security question.');
+      }
+  
+      if (!data.answer || data.answer.length < 5) {
+        errors.push('Invalid security answer. Answer should have at least 5 characters.');
+      }
+  
+      // Check if CNP and email exist and match the security question and answer
+      pool.query(
+        'SELECT * FROM vizitatori WHERE cnp = ? AND email = ? AND intrebare_securitate = ? AND raspuns_intrebare_securitate = ?',
+        [data.cnp, data.email, data.securityQuestion, data.answer],
+        (err, results) => {
+          if (err) {
+            reject(err);
+          }
+  
+          if (results && results.length === 0) {
+            errors.push('Invalid CNP, email, security question, or security answer.');
+          }
+          resolve(errors);
+        }
+      );
+    });
+  };
+  
+
+
 
   const validateCNP = (cnp,name, pool) => {
     return new Promise((resolve, reject) => {
@@ -157,7 +233,7 @@ const validateData = (data, pool) => {
     });
   };
 
-  function findUserByID(id, password, pool) {
+  function findUserByID(id, email, pool) {
     return new Promise((resolve, reject) => {
       pool.query('SELECT * FROM vizitatori WHERE id = ?', [id], (error, results) => {
         if (error) {
@@ -172,6 +248,25 @@ const validateData = (data, pool) => {
       });
     });
 }
+
+
+
+function findUserByCNPandEmail(cnp, email, pool) {
+  return new Promise((resolve, reject) => {
+    pool.query('SELECT * FROM vizitatori WHERE cnp = ? AND email = ?', [cnp, email], (error, results) => {
+      if (error) {
+        reject(error);
+      } else if (results.length > 0) {
+        // User found
+        resolve(results[0]);
+      } else {
+        // No user found
+        resolve(null);
+      }
+    });
+  });
+}
+
 
   function hashPassword(password) {
     const hash = crypto.createHash('sha256');
@@ -199,4 +294,6 @@ const validateData = (data, pool) => {
   
   
 
-  module.exports = {validateData, findUserByCNP, findUserByID, hashPassword, validateCNP, validateInmate, generateBlobFromBase64};
+  module.exports = {validateData, findUserByCNP, findUserByID, 
+                    hashPassword, validateCNP, validateInmate, generateBlobFromBase64,
+                    validateDataForgotPassword, findUserByCNPandEmail};

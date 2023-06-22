@@ -6,7 +6,8 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate, generateBlobFromBase64 } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate,
+   generateBlobFromBase64, validateDataForgotPassword, findUserByCNPandEmail } = require('./utilitary');
 const { parse } = require('path');
 
 // Create a MySQL connection pool
@@ -174,6 +175,127 @@ const server = http.createServer((req, res) => {
 
     });
   }
+
+  //Forgot-Password
+  else if (req.method === 'POST' && req.url === '/api/forgotPassword') {
+    let body = '';
+  
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+  
+    req.on('end', () => {
+      // Parse the request body as JSON
+      const formData = JSON.parse(body);
+  
+      // Call the validateDataForgotPassword function
+      validateDataForgotPassword(formData, pool)
+        .then((errors) => {
+          if (errors.length > 0) {
+            // Validation failed with errors
+            console.log(errors);
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ errors: errors }));
+          } else {
+            // Validation successful
+            findUserByCNPandEmail(formData.cnp, formData.email, pool)
+            .then(user => {
+              if (user) {
+                console.log(user);
+                // User found, generate and send token
+                const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+                console.log(token);
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ token: `Bearer ${token}` }));
+              } else {
+                // User not found
+                res.writeHead(401, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Not Registered / No user was found!' }));
+              }
+            })
+            .catch(error => {
+              // Handle database error
+              console.error(error);
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ message: 'Internal server error.' }));
+            });
+
+          }
+        })
+        .catch((err) => {
+          // Error occurred during validation
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'An error occurred during validation.' }));
+        });
+    });
+  }  
+
+  else if (req.method === 'POST' && req.url === '/api/updatePassword') {
+    const bearerToken = req.headers.authorization; // replace 'jwt' with the name of your cookie
+    console.log(bearerToken);
+  
+    // Remove 'Bearer ' prefix
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+  
+    console.log(token);
+  
+    // Verify and decode the JWT
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        // JWT is valid, proceed with password update
+  
+        // Get the form data from the request body
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+  
+        req.on('end', () => {
+          // Parse the request body as JSON
+          const formData = JSON.parse(body);
+  
+          // Validate passwords
+          const newPassword = formData.password;
+          const confirmPassword = formData.confirmPassword;
+          if (newPassword !== confirmPassword || newPassword.length < 5) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ message: 'Invalid passwords' }));
+            return;
+          }
+  
+          // Update the password in the database
+          const userId = decoded.userId;
+          pool.query(
+            'UPDATE vizitatori SET parola = ? WHERE id = ?',
+            [hashPassword(newPassword), userId],
+            (error) => {
+              if (error) {
+                console.error('Failed to update password in the database: ', error);
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ message: 'Internal server error' }));
+              } else {
+                // Password updated successfully
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ message: 'Password updated successfully' }));
+              }
+            }
+          );
+        });
+      }
+    });
+  }
+  
+  
   else if (parsedUrl.pathname === '/api/getInfoByID' && req.method === 'GET') {
     // Parse the Cookie header and extract the JWT
     //const cookies = cookie.parse(req.headers.cookie || '');
