@@ -131,6 +131,13 @@
 		justify-content: center;
     border-radius: 5px;
   }
+  .background-image {
+    background-image: url("../resources/Background6.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 100vh;
+  }
 
     .right-image-container {
 			flex-basis: 27%;
@@ -186,4 +193,3 @@
         height: 100%;
       }
     }
-

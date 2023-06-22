@@ -6,7 +6,8 @@ const cookie = require('cookie');
 
 const secretKey = 'goodKey';
 
-const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate } = require('./utilitary');
+const { validateData, findUserByCNP, hashPassword, findUserByID, validateCNP, validateInmate,
+   generateBlobFromBase64, validateDataForgotPassword, findUserByCNPandEmail } = require('./utilitary');
 const { parse } = require('path');
 
 // Create a MySQL connection pool
@@ -54,68 +55,80 @@ const server = http.createServer((req, res) => {
             console.log(...errors);
           } else {
             // create the query to insert the new user
-            const query = `
-              INSERT INTO vizitatori (
-                nume,
-                prenume,
-                cnp,
-                parola,
-                email,
-                numar_telefon,
-                data_nasterii,
-                cetatenie,
-                intrebare_securitate,
-                raspuns_intrebare_securitate,
-                role,
-                image
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
-            `;
-            pool.query(
-              query,
-              [
-                userInfo.nume,
-                userInfo.prenume,
-                userInfo.cnp,
-                hashPassword(userInfo.password),
-                userInfo.email,
-                userInfo.numar_telefon,
-                userInfo.data_nasterii,
-                userInfo.cetatenie,
-                userInfo.intrebare_securitate,
-                userInfo.raspuns_intrebare_securitate,
-                userInfo.image
-              ],
-              (error, results) => {
-                if (error) {
-                  console.error('Error executing query: ', error);
-                  res.statusCode = 500;
-                  res.end(JSON.stringify({ message: 'Internal Server Error!' }));
-                } else {
 
-                  findUserByCNP(userInfo.cnp, userInfo.password, pool)
-                  .then(user => {
-                    if (user) {
-                      console.log(user);
-                      // User found, generate and send token
-                      const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+            console.log(userInfo.image);
+
+
+            generateBlobFromBase64(userInfo.image)
+            .then(result => {
+              result.blob.arrayBuffer().then(buffer => {
+                const binaryData = Buffer.from(buffer);
+        
+                const query = `
+                  INSERT INTO vizitatori (
+                    nume,
+                    prenume,
+                    cnp,
+                    parola,
+                    email,
+                    numar_telefon,
+                    data_nasterii,
+                    cetatenie,
+                    intrebare_securitate,
+                    raspuns_intrebare_securitate,
+                    role,
+                    image,
+                    image_type
+                  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?, ?)
+                `;
+        
+                pool.query(query, [
+                  userInfo.nume,
+                  userInfo.prenume,
+                  userInfo.cnp,
+                  hashPassword(userInfo.password),
+                  userInfo.email,
+                  userInfo.numar_telefon,
+                  userInfo.data_nasterii,
+                  userInfo.cetatenie,
+                  userInfo.intrebare_securitate,
+                  userInfo.raspuns_intrebare_securitate,
+                  binaryData,
+                  result.type
+                ], (error, results) => {
+                  if (error) {
+                    console.error('Error executing query: ', error);
+                    res.statusCode = 500;
+                    res.end(JSON.stringify({ message: 'Internal Server Error!' }));
+                  } else {
+                    findUserByCNP(userInfo.cnp, userInfo.password, pool)
+                      .then(user => {
+                        if (user) {
+                          console.log(user);
+                          // User found, generate and send token
+                          const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
           
-                      res.writeHead(201, { 'Content-Type': 'application/json' });
-                      res.end(JSON.stringify({ token: `Bearer ${token}` }));
-                    } else {
-                      // User not found
-                      res.writeHead(401, { 'Content-Type': 'application/json' });
-                      res.end(JSON.stringify({ message: 'Not Registered!'}));
-                    }
-                  })
-                  .catch(error => {
-                    // Handle database error
-                    console.error(error);
-                    res.writeHead(500, { 'Content-Type': 'application/json' });
-                    res.end(JSON.stringify({ message: 'Internal server error.' }));
-                  });
-                }
-              }
-            );
+                          res.writeHead(201, { 'Content-Type': 'application/json' });
+                          res.end(JSON.stringify({ token: `Bearer ${token}` }));
+                        } else {
+                          // User not found
+                          res.writeHead(401, { 'Content-Type': 'application/json' });
+                          res.end(JSON.stringify({ message: 'Not Registered!' }));
+                        }
+                      })
+                      .catch(error => {
+                        // Handle database error
+                        console.error(error);
+                        res.writeHead(500, { 'Content-Type': 'application/json' });
+                        res.end(JSON.stringify({ message: 'Internal server error.' }));
+                      });
+                  }
+                });
+              });
+            })
+            .catch(error => {
+              console.log(error);
+            });
           }
         })
         .catch(error => {
@@ -162,6 +175,127 @@ const server = http.createServer((req, res) => {
 
     });
   }
+
+  //Forgot-Password
+  else if (req.method === 'POST' && req.url === '/api/forgotPassword') {
+    let body = '';
+  
+    req.on('data', (chunk) => {
+      body += chunk;
+    });
+  
+    req.on('end', () => {
+      // Parse the request body as JSON
+      const formData = JSON.parse(body);
+  
+      // Call the validateDataForgotPassword function
+      validateDataForgotPassword(formData, pool)
+        .then((errors) => {
+          if (errors.length > 0) {
+            // Validation failed with errors
+            console.log(errors);
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ errors: errors }));
+          } else {
+            // Validation successful
+            findUserByCNPandEmail(formData.cnp, formData.email, pool)
+            .then(user => {
+              if (user) {
+                console.log(user);
+                // User found, generate and send token
+                const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+                console.log(token);
+
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ token: `Bearer ${token}` }));
+              } else {
+                // User not found
+                res.writeHead(401, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Not Registered / No user was found!' }));
+              }
+            })
+            .catch(error => {
+              // Handle database error
+              console.error(error);
+              res.writeHead(500, { 'Content-Type': 'application/json' });
+              res.end(JSON.stringify({ message: 'Internal server error.' }));
+            });
+
+          }
+        })
+        .catch((err) => {
+          // Error occurred during validation
+          res.statusCode = 500;
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify({ error: 'An error occurred during validation.' }));
+        });
+    });
+  }  
+
+  else if (req.method === 'POST' && req.url === '/api/updatePassword') {
+    const bearerToken = req.headers.authorization; // replace 'jwt' with the name of your cookie
+    console.log(bearerToken);
+  
+    // Remove 'Bearer ' prefix
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+  
+    console.log(token);
+  
+    // Verify and decode the JWT
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        // JWT is valid, proceed with password update
+  
+        // Get the form data from the request body
+        let body = '';
+        req.on('data', (chunk) => {
+          body += chunk;
+        });
+  
+        req.on('end', () => {
+          // Parse the request body as JSON
+          const formData = JSON.parse(body);
+  
+          // Validate passwords
+          const newPassword = formData.password;
+          const confirmPassword = formData.confirmPassword;
+          if (newPassword !== confirmPassword || newPassword.length < 5) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify({ message: 'Invalid passwords' }));
+            return;
+          }
+  
+          // Update the password in the database
+          const userId = decoded.userId;
+          pool.query(
+            'UPDATE vizitatori SET parola = ? WHERE id = ?',
+            [hashPassword(newPassword), userId],
+            (error) => {
+              if (error) {
+                console.error('Failed to update password in the database: ', error);
+                res.statusCode = 500;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ message: 'Internal server error' }));
+              } else {
+                // Password updated successfully
+                res.statusCode = 200;
+                res.setHeader('Content-Type', 'application/json');
+                res.end(JSON.stringify({ message: 'Password updated successfully' }));
+              }
+            }
+          );
+        });
+      }
+    });
+  }
+  
+  
   else if (parsedUrl.pathname === '/api/getInfoByID' && req.method === 'GET') {
     // Parse the Cookie header and extract the JWT
     //const cookies = cookie.parse(req.headers.cookie || '');
@@ -185,7 +319,7 @@ const server = http.createServer((req, res) => {
         const userId = decoded.userId;
 
         // Create a MySQL query
-        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image FROM vizitatori WHERE id = ${userId}`;
+        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image, image_type FROM vizitatori WHERE id = ${userId}`;
 
         // Execute the query
         pool.query(query, (error, results) => {
@@ -207,7 +341,8 @@ const server = http.createServer((req, res) => {
                 email: user.email,
                 telefon: user.numar_telefon,
                 rol: user.role,
-                imagine : Buffer.from(user.image).toString('base64')
+                imagine : (user.image).toString('base64'),
+                tip_imagine : user.image_type
               };
 
               // Set CORS headers
@@ -1210,7 +1345,41 @@ const server = http.createServer((req, res) => {
       res.statusCode = 400;
       res.end('Bad Request');
     }
-  }else if (parsedUrl.pathname === '/api/addInmate' && req.method === "POST") {
+  }else if (parsedUrl.pathname === '/api/autocomplete') {
+    const bearerToken = req.headers.authorization;
+    
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        const searchTerm = parsedUrl.query.term;
+
+        const query = `
+        SELECT nume, cnp, prenume
+        FROM vizitatori
+        WHERE nume LIKE '%${searchTerm}%' OR cnp LIKE '%${searchTerm}%'` ;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+  }
+  else if (parsedUrl.pathname === '/api/addInmate' && req.method === "POST") {
         let body = ' ';
         req.on('data', chunk => {
           body += chunk.toString(); // convert Buffer to string

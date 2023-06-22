@@ -62,22 +62,26 @@ document.getElementById('register-form').addEventListener('submit', function(eve
   .then(response => {
     // Here you can check the response status
     if (response.status === 201) {
-      // If the user is created successfully, you can redirect here
-    } else {
-      // If there was an error, handle it here
-      alert("Registration failed. An error occurred.");
-      throw new Error('Registration failed. Please check your credentials.');
+      console.log('Registration successful');
+    } 
+    else {
+      console.log('Registration failed');
     }
 
     return response.json();  // This will pass the JSON response to the next then()
   })
   .then(data => {
-    // Handle the response data
-    document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    document.cookie = `jwt=${data.token}; Secure; SameSite=Strict;`;
-    console.log(data.token);
-    window.location.href = "./user-profile.html";
 
+    if (data && data.errors) {
+      const errorMessages = data.errors.map(error => `-> ${error}`).join('\n');
+      alert(`${errorMessages}`);
+    } 
+    else if (data && data.token) {
+      document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      document.cookie = `jwt=${data.token}; Secure; SameSite=Strict;`;
+      console.log(data.token);
+      window.location.href = "./user-profile.html";
+    } 
   })
   .catch(error => {
     // Handle the error
