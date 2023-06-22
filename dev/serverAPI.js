@@ -66,8 +66,9 @@ const server = http.createServer((req, res) => {
                 cetatenie,
                 intrebare_securitate,
                 raspuns_intrebare_securitate,
-                role
-              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user')
+                role,
+                image
+              ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'user', ?)
             `;
             pool.query(
               query,
@@ -82,6 +83,7 @@ const server = http.createServer((req, res) => {
                 userInfo.cetatenie,
                 userInfo.intrebare_securitate,
                 userInfo.raspuns_intrebare_securitate,
+                userInfo.image
               ],
               (error, results) => {
                 if (error) {
@@ -89,9 +91,28 @@ const server = http.createServer((req, res) => {
                   res.statusCode = 500;
                   res.end(JSON.stringify({ message: 'Internal Server Error!' }));
                 } else {
-                  res.setHeader('Content-Type', 'application/json');
-                  res.statusCode = 201; // Created
-                  res.end(JSON.stringify({ message: 'User registered successfully' }));
+
+                  findUserByCNP(userInfo.cnp, userInfo.password, pool)
+                  .then(user => {
+                    if (user) {
+                      console.log(user);
+                      // User found, generate and send token
+                      const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
+          
+                      res.writeHead(201, { 'Content-Type': 'application/json' });
+                      res.end(JSON.stringify({ token: `Bearer ${token}` }));
+                    } else {
+                      // User not found
+                      res.writeHead(401, { 'Content-Type': 'application/json' });
+                      res.end(JSON.stringify({ message: 'Not Registered!'}));
+                    }
+                  })
+                  .catch(error => {
+                    // Handle database error
+                    console.error(error);
+                    res.writeHead(500, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ message: 'Internal server error.' }));
+                  });
                 }
               }
             );
@@ -118,11 +139,11 @@ const server = http.createServer((req, res) => {
       //console.log(cnp,password);
 
       findUserByCNP(cnp, password, pool)
-        .then(userId => {
-          if (userId) {
-            console.log(userId);
+        .then(user => {
+          if (user) {
+            console.log(user);
             // User found, generate and send token
-            const token = jwt.sign({ userId }, secretKey, { expiresIn: '1h' });
+            const token = jwt.sign({ userId: user.id, role: user.role }, secretKey, { expiresIn: '1h' });
 
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ token: `Bearer ${token}` }));
@@ -164,7 +185,7 @@ const server = http.createServer((req, res) => {
         const userId = decoded.userId;
 
         // Create a MySQL query
-        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role FROM vizitatori WHERE id = ${userId}`;
+        const query = `SELECT nume, prenume, cnp, numar_telefon, email, role, image FROM vizitatori WHERE id = ${userId}`;
 
         // Execute the query
         pool.query(query, (error, results) => {
@@ -185,7 +206,8 @@ const server = http.createServer((req, res) => {
                 cnp: user.cnp,
                 email: user.email,
                 telefon: user.numar_telefon,
-                rol: user.role
+                rol: user.role,
+               // imagine : Buffer.from(user.image).toString('base64')
               };
 
               // Set CORS headers
@@ -623,7 +645,47 @@ const server = http.createServer((req, res) => {
       }
     });
 
-  } else if (parsedUrl.pathname === '/api/findUserByNumePrenume') {
+  } else if(parsedUrl.pathname === '/api/findAllUsers'){
+    
+    const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
+    console.log(bearerToken);
+
+    // Remove 'Bearer ' prefix
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    console.log(token);
+
+    // Verify and decode the JWT
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+
+      } else {
+
+        const query = `SELECT id,nume,prenume,email,numar_telefon,data_nasterii,cetatenie,role FROM vizitatori`;
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query: ', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          }
+          else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+
+  }
+  else if (parsedUrl.pathname === '/api/findUserByNumePrenume') {
     console.log(parsedUrl.query.nume + " " + parsedUrl.query.prenume);
     //get the name and surname from the query parameter and search for the user with that name and surname and return it
     const bearerToken = req.headers.authorization // replace 'jwt' with the name of your cookie
@@ -763,7 +825,9 @@ const server = http.createServer((req, res) => {
           res.end(JSON.stringify({ message: 'Unauthorized' }));
         } else {
           const userId = parsedUrl.query.id;
-          const query = `UPDATE vizitatori SET role = 'admin' WHERE id = ${userId}`;
+          // if the user is admin make him user and if he is user make him admin
+          const query = `UPDATE vizitatori SET role = CASE WHEN role = 'user' THEN 'admin' ELSE 'user' END WHERE id = ${userId}`;
+          
           pool.query(query, (error, results) => {
             if (error) {
               console.error('Error executing query:', error);
@@ -774,7 +838,7 @@ const server = http.createServer((req, res) => {
               res.setHeader('Access-Control-Allow-Methods', 'PUT');
               res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
               res.setHeader('Content-Type', 'application/json');
-              res.end(JSON.stringify({ message: 'User is now admin' }));
+              res.end(JSON.stringify({ message: 'User role has changed' }));
             }
           });
         }
@@ -816,7 +880,38 @@ const server = http.createServer((req, res) => {
       }
     });
 
-  } else if (parsedUrl.pathname === '/api/findVisitsByDeteineeName') {
+  } else if (parsedUrl.pathname === '/api/findAllVisits') {
+
+    const bearerToken = req.headers.authorization;
+    const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    jwt.verify(token, secretKey, (err, decoded) => {
+      if (err) {
+        console.error('Failed to verify JWT: ', err);
+        res.statusCode = 401;
+        res.end(JSON.stringify({ message: 'Unauthorized' }));
+      } else {
+        const query = `
+        SELECT v.natura_vizitei, v.data_vizitei, v.nume_detinut, v.prenume_detinut, v.nume, v.prenume, v.relatia, v.obiecte_de_livrat, v.nume_martor, v.prenume_martor, v.status
+        FROM vizite v
+        `;
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+      }
+    });
+
+  }else if (parsedUrl.pathname === '/api/findVisitsByDeteineeName') {
     const bearerToken = req.headers.authorization;
     const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
 
@@ -1115,7 +1210,39 @@ const server = http.createServer((req, res) => {
       res.statusCode = 400;
       res.end('Bad Request');
     }
-  }else if (parsedUrl.pathname === '/api/addInmate' && req.method === "POST") {
+  }else if (parsedUrl.pathname === '/api/autocomplete') {
+    //const bearerToken = req.headers.authorization;
+    //const token = bearerToken.startsWith('Bearer ') ? bearerToken.slice(7) : bearerToken;
+
+    //jwt.verify(token, secretKey, (err, decoded) => {
+      //if (err) {
+       // console.error('Failed to verify JWT: ', err);
+        //res.statusCode = 401;
+        //res.end(JSON.stringify({ message: 'Unauthorized' }));
+      //} else {
+        const searchTerm = parsedUrl.query.term;
+
+        const query = `
+        SELECT nume, cnp, prenume
+        FROM vizitatori
+        WHERE nume LIKE '%${searchTerm}%' OR cnp LIKE '%${searchTerm}%'` ;
+
+        pool.query(query, (error, results) => {
+          if (error) {
+            console.error('Error executing query:', error);
+            res.statusCode = 500;
+            res.end('Internal Server Error');
+          } else {
+            res.setHeader('Access-Control-Allow-Origin', '*');
+            res.setHeader('Access-Control-Allow-Methods', 'GET');
+            res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+            res.setHeader('Content-Type', 'application/json');
+            res.end(JSON.stringify(results));
+          }
+        });
+     // }
+    //});
+  } else if (parsedUrl.pathname === '/api/addInmate' && req.method === "POST") {
         let body = ' ';
         req.on('data', chunk => {
           body += chunk.toString(); // convert Buffer to string

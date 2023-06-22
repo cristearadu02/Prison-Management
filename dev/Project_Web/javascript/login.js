@@ -36,10 +36,10 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log(data);
 
         // Store the JWT in a secure cookie
+        document.cookie = "jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
         document.cookie = `jwt=${data.token}; Secure; SameSite=Strict;`;
         console.log(data.token);
-
-        window.location.href = './IndexLogat.html'; // Redirect to the logged-in page
+        window.location.href = "./user-profile.html";
       })
       .catch(error => {
         // Handle any errors that occurred during the login process

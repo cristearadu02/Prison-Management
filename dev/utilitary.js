@@ -108,7 +108,7 @@ const validateData = (data, pool) => {
             reject(error);
           } else if (results.length > 0 && results[0].parola === hashPassword(password)) {
             // User found and password matches
-            resolve(results[0].id); // assuming `id` is the column name for user id
+            resolve({id: results[0].id, role: results[0].role});
           } else {
             // No user found, or password did not match
             resolve(null);
@@ -164,7 +164,7 @@ const validateData = (data, pool) => {
           reject(error);
         } else if (results.length > 0 && results[0].parola === hashPassword(password)) {
           // User found and password matches
-          resolve(results[0].id); // assuming `id` is the column name for user id
+          resolve({id: results[0].id, role: results[0].role});
         } else {
           // No user found, or password did not match
           resolve(null);

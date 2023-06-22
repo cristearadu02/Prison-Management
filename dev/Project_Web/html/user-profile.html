@@ -6,11 +6,13 @@
   <link rel="stylesheet" href="../css/user-profile/user-profile.css">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald&display=swap">
   <script src="../javascript/user-profile.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@3.5.1/dist/chart.min.js"></script>
+
   <title>Penitenciarul Iași | Profil</title>
 </head>
 <body>
     <header>
-      <div class="logo" onclick="navigateToLink('IndexLogat.html')">Penitenciarul Iași</div>
+      <div class="logo" onclick="navigateToLink('Index.html')">Penitenciarul Iași</div>
       <div class="profile">
         <span class="change-password">Schimba parola</span>
         <img class="profile-img" src="../resources/prisoner-6930395.png" alt="Profile Image" >
@@ -23,7 +25,7 @@
           <div class="info">Rol: <p id="roleInfo"></p></div>
 
           <button class="change-info">Modificare informații</button>
-          <button class="logout" onclick="navigateToLink('Index.html')">Delogare</button>
+          <button class="logout" id="delogare">Delogare</button>
         </div>
       </div>
       <button class="create-visit" id="createVisit" onclick="navigateToLink('Programare.html')">Programare vizită</button>

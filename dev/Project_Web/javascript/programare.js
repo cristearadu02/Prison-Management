@@ -49,3 +49,78 @@ alert("Appointment failed. An error occurred.");
 console.error("Error during Appointment:", error);
 });
 });
+
+const inputName = document.getElementById('Nume_viz');
+const inputCNP = document.getElementById('CNP');
+const inputPrenume = document.getElementById('Prenume_viz');
+const autocompleteList = document.getElementById('autocomplete-list');
+let timeoutName;
+let timeoutCNP;
+
+inputName.addEventListener('focusout', handleInputName);
+inputCNP.addEventListener('focusout', handleInputCNP);
+
+function handleInputName() {
+  clearTimeout(timeoutName);
+  const searchTermName = inputName.value;
+
+  // Send a GET request to the server-side script for name suggestions
+  fetch(`http://localhost:3000/api/autocomplete?term=${encodeURIComponent(searchTermName)}`)
+    .then(response => response.json())
+    .then(data => {
+      clearAutocomplete();
+
+      if (data.length > 0) {
+        const bestMatch = data[0];
+        inputName.value = bestMatch.nume;
+        inputCNP.value = bestMatch.cnp;
+        inputPrenume.value = bestMatch.prenume;
+      }
+    })
+    .catch(error => {
+      console.error('An error occurred during autocomplete:', error);
+    });
+}
+
+function handleInputCNP() {
+  clearTimeout(timeoutCNP);
+  const searchTermCNP = inputCNP.value;
+
+  // Send a GET request to the server-side script for CNP suggestions
+  fetch(`http://localhost:3000/api/autocomplete?term=${encodeURIComponent(searchTermCNP)}`)
+    .then(response => response.json())
+    .then(data => {
+      clearAutocomplete();
+
+      if (data.length > 0) {
+        const bestMatch = data[0];
+        inputName.value = bestMatch.nume;
+        inputCNP.value = bestMatch.cnp;
+        inputPrenume.value = bestMatch.prenume;
+      }
+    })
+    .catch(error => {
+      console.error('An error occurred during autocomplete:', error);
+    });
+}
+
+function clearAutocomplete() {
+  if (autocompleteList) {
+    while (autocompleteList.firstChild) {
+      autocompleteList.removeChild(autocompleteList.firstChild);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
