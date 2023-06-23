@@ -58,8 +58,9 @@
   <script>
   // Verifică existența token-ului în cookie
   var jwt = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+  console.log(jwt);
 
-  if (jwt) {
+  if (jwt != "" && jwt != null && jwt != "null" && jwt != undefined && jwt != "undefined" ) {
     // Utilizatorul este logat
     // Ascunde link-ul de conectare și afișează link-urile pentru utilizatorul logat
     document.getElementById('loginLink').style.display = 'none';

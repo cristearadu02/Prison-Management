@@ -663,7 +663,7 @@ const server = http.createServer((req, res) => {
   req.on('end', () => {
     const appointmentInfo = JSON.parse(body);
 
-    validateCNP(appointmentInfo.cnp,appointmentInfo.nume,pool).then(errors => {
+    validateCNP(appointmentInfo.cnp,appointmentInfo.nume,appointmentInfo.nume_detinut,appointmentInfo.prenume_detinut,pool).then(errors => {
       if(errors.length > 0){
         res.setHeader('Content-Type', 'application/json');
           res.statusCode = 400; // Bad Request
@@ -1356,12 +1356,13 @@ const server = http.createServer((req, res) => {
         res.statusCode = 401;
         res.end(JSON.stringify({ message: 'Unauthorized' }));
       } else {
+        const userId = decoded.userId;
         const searchTerm = parsedUrl.query.term;
 
         const query = `
         SELECT nume, cnp, prenume
         FROM vizitatori
-        WHERE nume LIKE '%${searchTerm}%' OR cnp LIKE '%${searchTerm}%'` ;
+        WHERE id = ${userId}` ;
 
         pool.query(query, (error, results) => {
           if (error) {

@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Detention Admin - Report</title>
+    <link rel="stylesheet" href="css/scholarly.min.css">
+    <script src="js/scholarly.min.js"></script>  
+  </head>
+  <body vocab="http://schema.org/" typeof="schema:ScholarlyArticle" resource="#article">
+    <header>
+      <h1 property="headline">DeAd - report</h1>
+    </header>
+    <div role="contentinfo">
+      <dl>
+        <dt>Authors</dt>
+        <dd vocab="http://schema.org/" typeof="Person" property="author">
+            <span property="name">Cristea Andrei Radu 2A3</span>
+            (<a href="mailto:ar.cristea17@gmail.com" property="email" typeof="URL">ar.cristea17@gmail.com</a>)
+        </dd>
+        <dd vocab="http://schema.org/" typeof="Person" property="author">
+            <span property="name">Padurariu Robert Marian 2A3</span>
+            (<a href="mailto:robertmarian0202@gmail.com" property="email" typeof="URL">robertmarian0202@gmail.com</a>)
+        </dd>
+        <dd vocab="http://schema.org/" typeof="Person" property="author">
+            <span property="name">Apricopoai Andrei Constantin 2A3</span>
+            (<a href="mailto:andreiapricopoai15@gmail.com" property="email" typeof="URL">andreiapricopoai15@gmail.com</a>)
+        </dd>
+
+        <dt>Stages of project development</dt>
+        <dd>
+          The stages and the tasks done by each member can be seen on <a href="https://github.com/cristearadu02/ProiectWeb">GitHub</a>.
+        </dd>
+      </dl>
+    </div>
+    <section property="backstory" id="abstract" role="doc-abstract" >
+      <h2 property="description">Abstract</h2>
+      <p>
+        Detention Admin is a web application for the management of visits benefiting persons sentenced to the execution of a sentence in a penitentiary or a house of correction. Because of this application the detention facility can get statistics of all the visits made in the institution.
+        
+      </p>
+    </section>
+    <section id="functional" role="contentinfo">
+      <h2 property="description">Introduction</h2>
+      <p property="text">
+        Welcome to the introduction for the Detention Admin project. This project is designed to provide a user-friendly platform for scheduling visits to individuals who are currently incarcerated in correctional facilities. 
+        The platform is built using HTML, which is the standard markup language used to create and design web pages.
+        With Detention Admin, users can easily create an account, view available visitation slots, schedule a visit, and receive reminders about upcoming visits. 
+        The system is designed to be intuitive and easy to use, while also incorporating important security features to protect the privacy and safety of both visitors and inmates.
+      </p>
+    </section>
+
+      <section id="structure" role="contentinfo">
+                <h3 property="description">Structure</h3>
+                <section id="authentication" role="contentinfo">
+                    <h4 property="description">[USER] Login/Register </h4>
+                        <p property="text">
+                            The login is made based on the personal identification number used when first registering the account and the password associated with it.
+                            When registering an account, the user must specify his address, phone number, a photo, name, surname and a security question.
+                        </p>
+                  </section>
+
+                  <section id="programvisit" role="contentinfo">
+                    <h4 property="description">[USER] Schedule Visit</h4>
+                    <p  property="text">
+                            The user can schedule a visit by selecting the date and time of the visit, the person he wants to visit, the reason for the visit, the number of people who will attend the visit, and the objects he will bring to the inmate.
+                    </p>
+                </section>
+
+                <section id="visithistory" role="contentinfo">
+                  <h4 property="description">[USER] Visit History</h4>
+                  <p  property="text">
+                          The user can see the history of his visits, the date and time of the visit, the person he visited, the reason for the visit, the number of people who attended the visit, and the objects he brought to the inmate.
+                  </p>
+              </section>
+
+              <section id="accountmanagement" role="contentinfo">
+                <h4 property="description">[ADMIN] Account Management</h4>
+                <p  property="text">
+                        The administrator can manage the accounts of the users, by adding, deleting or modifying them.
+                </p>
+            </section>
+
+            <section id="viewstatistics" role="contentinfo">
+              <h4 property="description">[ADMIN] View statistics</h4>
+              <p  property="text">
+                      The administrator can view statistics about the visits made in the institution, such as the number of visits made in a certain period of time, the number of visits made by a certain person, the number of visits made by a certain person in a certain period of time, etc.
+              </p>
+          </section>
+
+          <section id="approvevisits" role="contentinfo">
+            <h4 property="description">[ADMIN] Approve Visits</h4>
+            <p  property="text">
+                    The administrator can approve or reject the visits made by the users.
+            </p>
+        </section>
+
+        <section id="approvevisits" role="contentinfo">
+          <h4 property="description">[ADMIN] Deteinee management</h4>
+          <p  property="text">
+                  The administrator can manage the detainees, by adding, deleting or modifying them.
+          </p>
+      </section>
+
+      </section>
+
+    <section id="technical" role="contentinfo">
+        <h2 property="description">Technical part</h2>
+        <section id="diagrams" role="contentinfo">
+            <!-- review? -->
+            <h3 property="description">Diagrams</h3>
+            <section id="usecase" role="contentinfo">
+                <h4 property="description">Use-case</h4>
+                <figure vocab="http://schema.org/" typeof="ImageObject">
+                    <img src="images/use_case.svg" alt="Use Case" property="contentUrl">
+                </figure>
+            </section>
+
+            <section id="c4" role="contentinfo">
+              <h4 property="description">C4</h4>
+              <figure vocab="http://schema.org/" typeof="ImageObject">
+                  <img src="images/C4.svg" alt="Use Case" property="contentUrl">
+              </figure>
+          </section>
+          
+        </section>
+
+    </section>
+
+    <section id="TechnicalDetails" role="contentinfo">
+        <h2 property="description">Pages</h2>
+
+        <section id="diagrams" role="contentinfo">
+            <!-- review? -->
+            <h3 property="description">Landing Page</h3>
+            
+            <p  property="text">
+                  The landing page is the first page that the user sees when he accesses the site. It contains a brief description of the site and depending if the user is logged in or not it will display the login and register button or my account and program a visit button.
+            </p>
+              <figure vocab="http://schema.org/" typeof="ImageObject">
+                  <img src="images/LandingPage.png" alt="Use Case" property="contentUrl">
+              </figure>
+
+        </section>
+
+        <section id="diagrams" role="contentinfo">
+          <h3 property="description">Register Page</h3>
+          <p  property="text">
+                The register page is the page where the user can create an account. It contains a form where the user must enter his personal identification number, password, name, surname, address, phone number, a security question and a photo.
+          </p>
+            <figure vocab="http://schema.org/" typeof="ImageObject">
+                <img src="images/Register.png" alt="Use Case" property="contentUrl">
+            </figure>
+        </section>
+
+        <section id="diagrams" role="contentinfo">
+          <h3 property="description">Login Page</h3>
+          <p  property="text">
+                The login page is the page where the user can log in to his account. It contains a form where the user must enter his personal identification number and password.
+          </p>
+            <figure vocab="http://schema.org/" typeof="ImageObject">
+                <img src="images/Login.png" alt="Use Case" property="contentUrl">
+            </figure>
+        </section>
+
+        <section id="diagrams" role="contentinfo">
+          <h3 property="description">User/Admin Profile Page</h3>
+          <p  property="text">
+                The user/admin profile page is the page where the user can see his personal information and informations about his visits and the admin can see the statistics about the visits made in the institution. It contains a form where the user/admin can modify his personal information. 
+          </p>
+            <figure vocab="http://schema.org/" typeof="ImageObject">
+                <img src="images/UserProfile.png" alt="Use Case" property="contentUrl">
+            </figure>
+        </section>
+
+        <section id="diagrams" role="contentinfo">
+          <h3 property="description">Appointment Form Page</h3>
+          <p  property="text">
+               In this page, the user can schedule a visit by selecting the date and time of the visit, the person he wants to visit, the reason for the visit, the number of people who will attend the visit, and the objects he will bring to the inmate.
+          </p>
+            <figure vocab="http://schema.org/" typeof="ImageObject">
+                <img src="images/Programare.png" alt="Use Case" property="contentUrl">
+            </figure>
+        </section>
+
+        <section id="diagrams" role="contentinfo">
+          <h3 property="description">Search Engine Page</h3>
+          <p  property="text">
+                In this page, the admin can search for visits based on the date and time of the visit, the person who visited, the reason for the visit, the number of people who attended the visit, and the objects brought to the inmate.
+          </p>
+            <figure vocab="http://schema.org/" typeof="ImageObject">
+                <img src="images/Search.png" alt="Use Case" property="contentUrl">
+            </figure>
+        </section>
+
+    </section>
+
+
+    <section id="technical" role="contentinfo">
+      <h2 property="description">Performance for each page</h2>
+
+
+      <section id="diagrams" role="contentinfo">
+        <h3 property="description">Register Page</h3>
+          <figure vocab="http://schema.org/" typeof="ImageObject">
+              <img src="images/RegisterPerformance.png" alt="Use Case" property="contentUrl">
+          </figure>
+      </section>
+
+      <section id="diagrams" role="contentinfo">
+        <h3 property="description">Login Page</h3>
+          <figure vocab="http://schema.org/" typeof="ImageObject">
+              <img src="images/LoginPerformance.png" alt="Use Case" property="contentUrl">
+          </figure>
+      </section>
+
+      <section id="diagrams" role="contentinfo">
+        <h3 property="description">User/Admin Profile Page</h3>
+          <figure vocab="http://schema.org/" typeof="ImageObject">
+              <img src="images/UserProfilePerformance.png" alt="Use Case" property="contentUrl">
+          </figure>
+      </section>
+
+      <section id="diagrams" role="contentinfo">
+        <h3 property="description">Appointment Form Page</h3>
+
+          <figure vocab="http://schema.org/" typeof="ImageObject">
+              <img src="images/ProgramarePerformance.png" alt="Use Case" property="contentUrl">
+          </figure>
+      </section>
+
+      <section id="diagrams" role="contentinfo">
+        <h3 property="description">Search Engine Page</h3>
+          <figure vocab="http://schema.org/" typeof="ImageObject">
+              <img src="images/CautarePerformance.png" alt="Use Case" property="contentUrl">
+          </figure>
+      </section>
+
+  </section>
+
+  <section id="technical" role="contentinfo">
+    <h2 property="description">Backend details</h2>
+
+    <p property = "text">
+      Here's an explanation of its main components and functionalities:
+
+      Importing Required Modules:
+      
+      The code begins by importing necessary modules such as http, mysql, url, jsonwebtoken, and cookie.
+      These modules are used for creating an HTTP server, interacting with a MySQL database, parsing URLs, handling JSON Web Tokens (JWT), and managing cookies.
+      Setting Up Server and CORS:
+      
+      The code creates an HTTP server using http.createServer().
+      CORS (Cross-Origin Resource Sharing) headers are set to allow requests from any origin.
+      The server handles preflight requests by responding with appropriate CORS headers and an empty JSON response.
+      Handling API Routes:
+      
+      The server checks the incoming requests and their methods using req.method and parsedUrl.pathname.
+      The code includes handling for two routes: /api/register and /api/login.
+      User Registration:
+      
+      For the /api/register route, when a POST request is received:
+      The request body is parsed to extract user information in JSON format.
+      The validateData function is called to validate the user data, passing the userInfo and the MySQL connection pool (pool).
+      If validation fails (i.e., there are errors in the user data), a JSON response with a 400 status code is sent, containing the validation errors.
+      If validation succeeds, the user's image data is processed using the generateBlobFromBase64 function, which converts a base64-encoded image to a binary Blob.
+      The user data and the converted image Blob are then inserted into the MySQL database using a prepared query.
+      If the insertion is successful, the findUserByCNP function is called to retrieve the newly registered user from the database.
+      If the user is found, a JWT token is generated and sent in the response body with a 201 status code.
+      If the user is not found or any error occurs during the process, appropriate error responses are sent.
+      User Login:
+      
+      For the /api/login route, when a POST request is received:
+      The request body is parsed to extract the user's CNP (personal identification number) and password.
+      The findUserByCNP function is called to check if a user with the provided CNP and password exists in the database.
+      If the user is found, a JWT token is generated and sent in the response body with a 200 status code.
+      If the user is not found or any error occurs during the process, appropriate error responses are sent.
+
+      Etc...
+    </p>
+
+    <figure vocab="http://schema.org/" typeof="ImageObject">
+      <img src="images/1.png" alt="Use Case" property="contentUrl">
+  </figure>
+
+  <figure vocab="http://schema.org/" typeof="ImageObject">
+    <img src="images/2.png" alt="Use Case" property="contentUrl">
+</figure>
+
+
+<figure vocab="http://schema.org/" typeof="ImageObject">
+  <img src="images/3.png" alt="Use Case" property="contentUrl">
+</figure>
+    
+
+</section>
+
+  </body>
+</html>
+                     

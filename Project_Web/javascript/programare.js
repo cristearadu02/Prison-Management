@@ -37,7 +37,7 @@ body: JSON.stringify(formData2),
 // Here you can check the response status
 if (response.status === 201) {
  // If the user is created successfully, you can redirect here
- window.location.href = "./IndexLogat.html";
+ window.location.href = "../Index.html";
 } else {
  // If there was an error, handle it here
  alert("Appointment failed. An error occurred.");

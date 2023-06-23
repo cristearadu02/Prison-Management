@@ -147,7 +147,7 @@ const validateData = (data, pool) => {
 
 
 
-  const validateCNP = (cnp,name, pool) => {
+  const validateCNP = (cnp, name, nume_detinut, prenume_detinut, pool) => {
     return new Promise((resolve, reject) => {
       const errors = [];
   
@@ -156,24 +156,54 @@ const validateData = (data, pool) => {
         errors.push('Invalid CNP. The CNP should have exactly 13 digits.');
       }
   
-      // Check if CNP exists
-      pool.query(
-        'SELECT * FROM vizitatori WHERE cnp = ? AND nume = ?',
-        [cnp, name],
-        (err, results) => {
-          if (err) {
-            reject(err);
+      const query1Promise = new Promise((resolveQuery1, rejectQuery1) => {
+        pool.query(
+          'SELECT * FROM vizitatori WHERE cnp = ? AND nume = ?',
+          [cnp, name],
+          (err, results) => {
+            if (err) {
+              rejectQuery1(err);
+            }
+  
+            if (results && results.length === 0) {
+              errors.push('CNP and name do not match.');
+            }
+  
+            resolveQuery1();
           }
-  
-        if (results && results.length === 0) {
-          errors.push('CNP and name do not match.');
-        }
-  
-        // Resolve the errors
-        resolve(errors);
+        );
       });
+  
+      const query2Promise = new Promise((resolveQuery2, rejectQuery2) => {
+        pool.query(
+          'SELECT * FROM detinuti WHERE nume = ? AND prenume = ?',
+          [nume_detinut, prenume_detinut],
+          (err, results) => {
+            if (err) {
+              rejectQuery2(err);
+            }
+  
+            if (results && results.length === 0) {
+              errors.push('This inmate does not exist');
+            }
+  
+            resolveQuery2();
+          }
+        );
+      });
+  
+      // Wait for both queries to resolve
+      Promise.all([query1Promise, query2Promise])
+        .then(() => {
+          // Resolve with the errors
+          resolve(errors);
+        })
+        .catch((err) => {
+          reject(err);
+        });
     });
   };
+  
 
 
   function findUserByCNP(cnp, password, pool) {
