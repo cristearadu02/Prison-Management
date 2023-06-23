@@ -1,5 +1,12 @@
+
+var jwt = document.cookie.replace(/(?:(?:^|.*;\s*)jwt\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+console.log(jwt);
+
 document.getElementById('programation-from').addEventListener('submit', function(event) {
   //Prevent the form from submitting normally
+
+
+
  event.preventDefault();
 
 
@@ -65,8 +72,13 @@ function handleInputName() {
   const searchTermName = inputName.value;
 
   // Send a GET request to the server-side script for name suggestions
-  fetch(`http://localhost:3000/api/autocomplete?term=${encodeURIComponent(searchTermName)}`)
-    .then(response => response.json())
+  fetch(`http://localhost:3000/api/autocomplete?term=${encodeURIComponent(searchTermName)}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
     .then(data => {
       clearAutocomplete();
 
@@ -87,8 +99,13 @@ function handleInputCNP() {
   const searchTermCNP = inputCNP.value;
 
   // Send a GET request to the server-side script for CNP suggestions
-  fetch(`http://localhost:3000/api/autocomplete?term=${encodeURIComponent(searchTermCNP)}`)
-    .then(response => response.json())
+  fetch(`http://localhost:3000/api/autocomplete?term=${encodeURIComponent(searchTermCNP)}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+        'Authorization': jwt // The JWT already includes 'Bearer' prefix
+    }
+}).then(response => response.json())
     .then(data => {
       clearAutocomplete();
 
@@ -111,16 +128,3 @@ function clearAutocomplete() {
     }
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
